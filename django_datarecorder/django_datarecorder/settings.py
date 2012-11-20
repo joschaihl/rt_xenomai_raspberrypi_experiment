@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/sync/private/fhb/Masterthesis_JoschaIhl/Software/eclipse-workspace/django_datarecorder/sqlite.db',                      # Or path to database file if using sqlite3.
+        'NAME': '/tmp/sqlite.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -122,9 +122,8 @@ INSTALLED_APPS = (
     'dajaxice',
     'dajax',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -155,3 +154,7 @@ LOGGING = {
         },
     }
 }
+
+import django.contrib.auth
+django.contrib.auth.LOGIN_URL = "/login/"
+

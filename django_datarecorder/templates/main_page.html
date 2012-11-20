@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>DataRecorder Control Application</title>
-</head>
-<body>
-	<h1>DataRecorder Control Application</h1> 
-	{{test}}
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Welcome to Data Recorder{% endblock %}
+{% block head %}Welcome to Data Recorder{% endblock %}
+{% block content %}
+	{% if user.username %}
+		<p>Welcome {{user.username }}:
+		Here you can use the data recorder</p>
+	{% else %}
+		<p>Welcome anonymous user:
+		You need to <a href="/login">login</a> before you can use the data recorder.</p> 
+	{% endif %}
+{% endblock %}

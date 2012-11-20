@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<title>Django Bookmarks | {% block title %} {% endblock %} </title>
+	<title>Data Recorder | {% block title %} {% endblock %} </title>
 	<link rel="stylesheet" href="/site_media/style.css" type="text/css" />
 	<script type="text/javascript" 
 	src="/site_media/jquery-1.8.2.js"></script>
@@ -12,8 +12,6 @@
 	<div id="nav">
 		<a href="/">home</a> |
 		{% if user.is_authenticated %}
-			<a href="/save/">submit</a> |
-			<a href="/search/">search</a> |
 			<a href="/user/{{user.username}}/">{{user.username}}</a> |
 			<a href="/logout">logout</a>
 		{% else %}
