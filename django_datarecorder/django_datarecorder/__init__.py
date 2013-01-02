@@ -1,0 +1,1 @@
+print 'startup code 1'
