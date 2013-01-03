@@ -1,0 +1,6 @@
+*.pyc
+*.o
+*.d
+*.prefs
+*.DS_Store
+*.map

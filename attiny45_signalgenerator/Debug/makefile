@@ -45,47 +45,47 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 LSS += \
-Tiny45Test.lss \
+attiny45_signalgenerator.lss \
 
 FLASH_IMAGE += \
-Tiny45Test.hex \
+attiny45_signalgenerator.hex \
 
 SIZEDUMMY += \
 sizedummy \
 
 
 # All Target
-all: Tiny45Test.elf secondary-outputs
+all: attiny45_signalgenerator.elf secondary-outputs
 
 # Tool invocations
-Tiny45Test.elf: $(OBJS) $(USER_OBJS)
+attiny45_signalgenerator.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C++ Linker'
-	avr-g++ -Wl,-Map,Tiny45Test.map,--cref -mmcu=attiny45 -o "Tiny45Test.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-g++ -Wl,-Map,attiny45_signalgenerator.map,--cref -mmcu=attiny45 -o "attiny45_signalgenerator.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-Tiny45Test.lss: Tiny45Test.elf
+attiny45_signalgenerator.lss: attiny45_signalgenerator.elf
 	@echo 'Invoking: AVR Create Extended Listing'
-	-avr-objdump -h -S Tiny45Test.elf  >"Tiny45Test.lss"
+	-avr-objdump -h -S attiny45_signalgenerator.elf  >"attiny45_signalgenerator.lss"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Tiny45Test.hex: Tiny45Test.elf
+attiny45_signalgenerator.hex: attiny45_signalgenerator.elf
 	@echo 'Create Flash image (ihex format)'
-	-avr-objcopy -R .eeprom -O ihex Tiny45Test.elf  "Tiny45Test.hex"
+	-avr-objcopy -R .eeprom -O ihex attiny45_signalgenerator.elf  "attiny45_signalgenerator.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-sizedummy: Tiny45Test.elf
+sizedummy: attiny45_signalgenerator.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=attiny45 Tiny45Test.elf
+	-avr-size --format=avr --mcu=attiny45 attiny45_signalgenerator.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(LSS)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) Tiny45Test.elf
+	-$(RM) $(OBJS)$(C_DEPS)$(ELFS)$(FLASH_IMAGE)$(LSS)$(S_DEPS)$(CXX_DEPS)$(S_UPPER_DEPS)$(C++_DEPS)$(ASM_DEPS)$(CC_DEPS)$(CPP_DEPS)$(C_UPPER_DEPS)$(SIZEDUMMY) attiny45_signalgenerator.elf
 	-@echo ' '
 
 secondary-outputs: $(LSS) $(FLASH_IMAGE) $(SIZEDUMMY)

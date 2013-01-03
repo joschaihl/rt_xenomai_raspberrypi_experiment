@@ -92,84 +92,9 @@ int main(void)
 	DDRB |= (1 << LED_PIN); // LED als Output, Rest als Input
 
 
-	/*MCUCR |= (1 << 1); // Interrupt bei LOW-Pegel
-	GIMSK |= (1 << INT0);
-
-	TCCR0B |= (1 << CS00);
-	// Timer aktivieren
-	TIMSK |= (1 << TOIE0);
-	sei();*/
-	//GIMSK = INT0;
-
-//	GIFR =
-//	sei();
-
-
 
 	while(1)
 	{
-	/*	if(program_state == 0)
-		{
-			// kurz EIN
-			PORTB |= (1 << LED_PORT);
-			_delay_ms(100);
-
-		}
-		else if(program_state == 1)
-
-		{
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 1x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 2x
-			_delay_ms(100);
-
-		}
-		else if(program_state == 2)
-		{
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 1x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 2x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 3x
-			_delay_ms(100);
-
-		}
-		else if(program_state == 3)
-		{
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 1x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 2x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 3x
-			_delay_ms(100);
-			PORTB &= ~(1 << LED_PORT); // dann wieder aus
-			_delay_ms(100);
-			// kurz EIN
-			PORTB |= (1 << LED_PORT); // 4x
-			_delay_ms(100);
-
-		}
-		PORTB &= ~(1 << LED_PORT);
-		_delay_ms(500);*/
 
 	}
-
 }
