@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
+from django.core.context_processors import csrf
 
 def logout_page(request):
     logout(request)
@@ -58,7 +59,6 @@ def main_page(request):
         elif 'record_false' in request.POST:
             recordingRequest = False
             recordControl = True
-        
         if recordControl:
             recControlForm = RecorderControlForm(request.POST)
             #print "Test"
@@ -66,15 +66,22 @@ def main_page(request):
             #    print "Valid"
             environmentModel = EnvironmentModel.objects.create(globalRecordingIsActive=recordingRequest, realTimeViolationCounter=0)
             environmentModel.save();
-        
         sensorControlForm = SensorControlForm(request.POST)
-        
-
-    else:
+    else: 
         recControlForm = RecorderControlForm()
         sensorControlForm = SensorControlForm()
         
-    return render_to_response('main_page.html', RequestContext(request))    
+    environmentModel = EnvironmentModel.objects.latest("id");
+    recordingIsActive = environmentModel.globalRecordingIsActive;
+    
+    variables = Context({
+                         'recordingIsActive': recordingIsActive,
+                         'user': request.user
+    });
+    
+    variables.update(csrf(request));
+    return render_to_response('main_page.html', variables)    
+    #return render_to_response('main_page.html', RequestContext(request))
 #    global test
 #    test = test +1
 #    variables = Context({
