@@ -1,0 +1,17 @@
+{%include "sensor_control.html" %}
+<br/>
+
+<form method="post" action=".">
+	{% csrf_token %} 
+	<fieldset>
+	<legend>Recorder Control</legend>
+	<input type="hidden" name="next" value="/" />
+	{% if recordingIsActive %}
+	<input type="submit" name="record_false" value="Pause" />
+	{% else %}
+	<input type="submit" name="record_true" value="Record" />
+	{% endif %}
+	</fieldset>
+</form>
+
+System state: {% if recordingIsActive %} Recording {% else %} Pause  {% endif %}
