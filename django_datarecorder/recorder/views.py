@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
 from django.core.context_processors import csrf
 
+import os
+
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')
@@ -44,6 +46,10 @@ def user_page(request, username):
     })
 
     return render_to_response('user_page.html', variables)
+    
+def shutdown_page(request):
+	os.system("sudo halt")
+	return render_to_response('shutdown_page.html')
 
 def alert_example(request):
     dajax = Dajax()

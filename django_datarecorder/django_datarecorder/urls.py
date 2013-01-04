@@ -20,6 +20,7 @@ urlpatterns = patterns('',
         
     # Session Management
     (r'^login/$', 'django.contrib.auth.views.login'),
+    (r'^shutdown/$', shutdown_page),
     (r'^logout/$', logout_page),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', 
         { 'document_root': site_media }),
