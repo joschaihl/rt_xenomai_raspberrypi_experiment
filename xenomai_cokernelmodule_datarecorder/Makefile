@@ -1,5 +1,5 @@
 ARCH=arm
-MODULES = xen
+MODULES = datarecorder
 
 
 KSRC ?= /lib/modules/$(shell uname -r)/build
