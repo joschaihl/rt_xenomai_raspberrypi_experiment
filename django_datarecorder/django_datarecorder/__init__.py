@@ -1,1 +1,1 @@
-print 'startup code 1'
+print 'Initializing Django-Datarecorder-Application...'

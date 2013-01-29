@@ -1,6 +1,6 @@
 {%include "sensor_control.html" %}
-<br/>
 
+<h2>Recorder Control</h2>
 <form method="post" action=".">
 	{% csrf_token %} 
 	<fieldset>
@@ -15,4 +15,4 @@
 </form>
 
 System state: {% if recordingIsActive %} Recording {% else %} Pause  {% endif %} <br/>
-System time: {{systemzeit}}
+System time: {{systemtime}}<br/>

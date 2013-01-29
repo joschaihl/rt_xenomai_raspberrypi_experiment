@@ -9,10 +9,18 @@
 # In order to enable or disable this script just change the execution
 # bits.
 #
+echo "Starting Xenomai-Realtime-Kernel-Module..."
+/sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/datarecorder.ko
+
 /opt/www/start_django_datarecorder_as_local_tcp_socket.sh
 
 SYSVER=`uname -s -r`
 FREESPACE=`/usr/bin/freespace`
+
+# Get shure that sudoers has 0 as uid 
+chown root:root /etc/sudoers
+
+sh -c 'setterm -blank 0 -powersave off -powerdown 0 < /dev/console > /dev/console 2>&1'
 espeak -vde "System $SYSVER wurde gestartet."
 espeak -vde "Freier Speicherplatz auf Wurzel-Dateisystem ist $FREESPACE Gigabeit"
 #espeak -vde "Echtzeit-Datenrekoder-Applikation konnte nicht gestartet werden."

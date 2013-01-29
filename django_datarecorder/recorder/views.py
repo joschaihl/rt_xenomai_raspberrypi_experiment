@@ -80,9 +80,10 @@ def main_page(request):
     environmentModel = EnvironmentModel.objects.latest("id");
     recordingIsActive = environmentModel.globalRecordingIsActive;
     
-    systemtime = 'Hallo' #time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
+    systemtime = time.asctime(time.localtime())
+  	#time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({
-    										 'systemtime': 'blabla',
+    										 'systemtime': systemtime,
                          'recordingIsActive': recordingIsActive,
                          'user': request.user
     });
