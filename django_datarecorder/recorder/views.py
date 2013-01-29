@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
 from django.core.context_processors import csrf
 
-import os
+import os, time
 
 def logout_page(request):
     logout(request)
@@ -80,7 +80,9 @@ def main_page(request):
     environmentModel = EnvironmentModel.objects.latest("id");
     recordingIsActive = environmentModel.globalRecordingIsActive;
     
+    systemtime = 'Hallo' #time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({
+    										 'systemtime': 'blabla',
                          'recordingIsActive': recordingIsActive,
                          'user': request.user
     });

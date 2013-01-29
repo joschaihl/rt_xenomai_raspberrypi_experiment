@@ -1,7 +1,6 @@
 ARCH=arm
 MODULES = datarecorder
 
-
 KSRC ?= /lib/modules/$(shell uname -r)/build
 #KSRC ?= /lib/modules/3.2.21+/build
 OBJS     := ${patsubst %, %.o, $(MODULES)}
