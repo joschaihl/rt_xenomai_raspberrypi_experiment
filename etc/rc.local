@@ -12,7 +12,8 @@
 echo "Starting Xenomai-Realtime-Kernel-Module..."
 /sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/datarecorder.ko
 
-/opt/www/start_django_datarecorder_as_local_tcp_socket.sh
+#/opt/www/start_django_datarecorder_as_local_tcp_socket.sh
+/opt/www/django_datarecorder/manage.py runfcgi method=threaded host=127.0.0.1 port=3033
 
 SYSVER=`uname -s -r`
 FREESPACE=`/usr/bin/freespace`

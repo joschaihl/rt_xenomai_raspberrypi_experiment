@@ -18,8 +18,9 @@
 /* Datastructes for shared memory */
 unsigned int ringbuffer_size_mb = 16;
 char *ringbuffer = NULL;
+#define SHM_NAME "RecorderRingbufferHeap"
 RT_HEAP datarecorder_heap;
-void *shmem;
+char *shmem;
 
 /* Task Control */
 #include <native/task.h>
@@ -119,8 +120,18 @@ static void timer_proc(rtdm_timer_t *timer)
 {
 	//RT_PIPE_MSG *msgout;
 	//int len;
+    static int firstrun = 0;
+    
+
+    // For latency measuring
     now = rtdm_clock_read_monotonic();
-        
+    
+    // For latency measuring
+    if(firstrun==0)
+    {
+        previous = now;
+    }
+    
     if(recorderState==rec_state_running)
     {
         /* FIXME: Don't use a Linux kernel-function here, 
@@ -128,21 +139,36 @@ static void timer_proc(rtdm_timer_t *timer)
            context-switching */
         if(gpio_get_value(17))
         {
-            blink = 0;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "HIGH %llu\n",
                         /*1000000000 - */(now - previous));
         }
         else
         {
-            blink = 1;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "LOW %llu\n",
                         /*1000000000 - */(now - previous));
         }
-        gpio_set_value(16, blink);
         
+        gpio_set_value(16, blink);
+        if(blink==0)
+        {
+            blink = 1;
+            shmem[0] = 1;
+            //datarecorder_heap[0] = 1;
+        }
+        else
+        {
+            blink = 0;
+            shmem[0] = 0;
+        }
         
     }
     
+    if(firstrun==0)
+    {
+        firstrun = 1;
+    }
+    
+    // For latency measuring
     previous = rtdm_clock_read_monotonic();
 }
 
@@ -159,7 +185,7 @@ static int datarecorder_init(void)
     rtdm_printk(KERN_INFO DPRINT_PREFIX
                 "Reserving %d MB for shared memory RecorderRingbufferHeap... ",
                 ringbuffer_size_mb);
-	err = rt_heap_create(&datarecorder_heap,"RecorderRingbufferHeap",
+	err = rt_heap_create(&datarecorder_heap, SHM_NAME,
                          ringbuffer_size_mb * 1024 * 1024,H_SHARED);
     
     switch(err) {
