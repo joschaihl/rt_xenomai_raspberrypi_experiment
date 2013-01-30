@@ -6,8 +6,8 @@ import os
 pipe_name = "/dev/rtp7"
 
 pipeout = os.open(pipe_name, os.O_WRONLY)
-os.write(pipeout, "hello");
-
+os.write(pipeout, "pause");
+os.close(pipeout)
 
 
 
