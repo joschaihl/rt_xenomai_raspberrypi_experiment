@@ -10,7 +10,6 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
 from django.core.context_processors import csrf
-from bla import Bla
 from xenomai_interface.recordercontroller import RecorderController
 
 import os, time
@@ -60,7 +59,6 @@ def alert_example(request):
 
 def main_page(request):
     if request.method == 'POST':    
-        bla = Bla()
         recorderController = RecorderController()
         recordControl = False
         if 'record_true' in request.POST:
