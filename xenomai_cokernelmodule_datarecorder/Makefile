@@ -2,6 +2,7 @@ ARCH=arm
 MODULES = control_pipe rec_state datarecorder
 KSRC ?= /lib/modules/$(shell uname -r)/build
 #KSRC ?= /lib/modules/3.2.21+/build
+KBIN ?= /lib/modules/$(shell uname -r)/kernel
 OBJS     := ${patsubst %, %.o, $(MODULES)}
 #OBJS = print.o ringbuffer_model.o control_pipe.o rec_state.o
 CLEANMOD := ${patsubst %, .%*, $(MODULES)}
@@ -30,6 +31,11 @@ all::
 	$(MAKE) -C $(KSRC) ARCH=$(ARCH) SUBDIRS=$(PWD) modules
 	gcc $(USPACE_CFLAGS) $(USPACE_LDFLAGS) read_shm.c -o read_shm
 	$(RM) *.o
+
+modules_install::
+	mkdir $(KBIN)/datarecorder
+	cp control_pipe.ko rec_state.ko datarecorder.ko $(KBIN)/datarecorder
+	depmod -a
 
 clean::
 	$(RM) $(CLEANMOD) *.o *.ko *.mod.c Module*.symvers Module.markers modules.order read_shm

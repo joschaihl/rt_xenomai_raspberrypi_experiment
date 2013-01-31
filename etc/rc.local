@@ -10,7 +10,16 @@
 # bits.
 #
 echo "Starting Xenomai-Realtime-Kernel-Module..."
-/sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/datarecorder.ko
+
+#/sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/rec_state.ko \
+#	&& sleep 1 && /sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/datarecorder.ko \
+#  && sleep 1 && /sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/control_pipe.ko
+
+echo "Inserting datarecorder.ko..."
+
+sleep 1
+echo "Inserting control_pipe.ko..."
+
 
 #/opt/www/start_django_datarecorder_as_local_tcp_socket.sh
 /opt/www/django_datarecorder/manage.py runfcgi method=threaded host=127.0.0.1 port=3033
