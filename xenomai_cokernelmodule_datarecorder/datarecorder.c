@@ -5,33 +5,42 @@
 /* Can be controlled via Realtime Pipe /dev/rtp7                              */
 /* 2013 by Joscha Ihl <joscha@grundfarm.de>                                   */
 /******************************************************************************/
+#include "print.h"
+#include "ringbuffer_model.h"
+#include "control_pipe.h"
+#include "rec_state.h"
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
+
+/* GPIO Pin configuration */
 #include <mach/gpio.h>
+
+#define GPIO_PIN_1 17
+#define GPIO_PIN_SAMPLE_STATUS_LED 16
 
 /* Shared Memory */
 #include <native/heap.h>
 
+typedef struct {
+    uint8_t sensor_id;
+    uint64_t sample_time;
+    uint8_t sensor_value;
+} SensorDataValueModel;
+
 /* Datastructes for shared memory */
 unsigned int ringbuffer_size_mb = 16;
-char *ringbuffer = NULL;
+unsigned int ringbuffer_index = 0;
+unsigned int ringbuffer_max_index = 1000;
 #define SHM_NAME "RecorderRingbufferHeap"
 RT_HEAP datarecorder_heap;
-char *shmem;
+void *shmem;
 
 /* Task Control */
 #include <native/task.h>
-RT_TASK def_recorder_control_task;
 
-
-/* Command Pipe */
-#include <native/pipe.h>
-#include <fcntl.h>
-#include <linux/string.h>
-RT_PIPE pipe_desc;
 
 /* Xenomai Modules */
 #include <rtdm/rtdm_driver.h>
@@ -39,13 +48,7 @@ RT_PIPE pipe_desc;
 //int frequency = 10 * 1000 * 1000;
 
 /* Datastructures for DataRecorder */
-typedef enum e_SystemState {
-    rec_state_pause = 0,
-    rec_state_running = 1,
-    rec_state_error = 2,
-    rec_state_init = 3,
-} SystemState;
-SystemState recorderState = rec_state_init;
+
 
 /* Datastructures for sample timer */
 int frequency = 1000 * 1000 * 1000;
@@ -55,62 +58,12 @@ rtdm_timer_t datarecorder_timer;
 uint64_t previous, now;
 int blink = 0;
 
-#define DPRINT_PREFIX "DataRecorder: "
-#define DPRINT(s) rtdm_printk(KERN_INFO DPRINT_PREFIX "%s\n", s) 
-
-void parse_control_cmd(char *control_string, unsigned int string_length)
+void insertSampleToRingBuffer(SensorDataValueModel sample)
 {
-    unsigned int i;
-#ifdef DEBUG_DATARECORDER
-    for(i=0; i< string_length;i++)
-    {
-        rtdm_printk(KERN_INFO DPRINT_PREFIX "string[%d] = %c = %d", i, control_string[i], control_string[i]);
-    }
-#endif
-    if(strncmp(control_string, "start\n", string_length)==0)
-    {
-        DPRINT("START");
-        recorderState = rec_state_running;
-    }
-    else if(strncmp(control_string, "pause\n", string_length)==0)
-    {
-        DPRINT("PAUSE");
-        recorderState = rec_state_pause;
-    }
-}
-
-/**
- * Controls the recorder via RealTime Pipe
- */
-void recorder_control_task(void *cookie)
-{
-	RT_PIPE_MSG *msgin;
-	int err, len, n;
-	for(;;)
-	{
-		/* Then wait for the reply string "World": */
-		n = rt_pipe_receive(&pipe_desc, &msgin, TM_INFINITE);
-        
-		if (n < 0) {
-            DPRINT("recorder_control_task() Pipe receive error");
-            continue;
-		}
-		if (n == 0) {
-            if (msgin == NULL) {
-#ifdef DEBUG_DATARECORDER
-                DPRINT("recorder_control_task() pipe closed by peer");
-#endif
-                continue;
-            }
-            DPRINT("recorder_control_task() Empty message received");
-		}
-        else
-        {
-            parse_control_cmd(P_MSGPTR(msgin), P_MSGSIZE(msgin));
-        }
-		/* Free the received message buffer. */
-		rt_pipe_free(&pipe_desc, msgin);
-	}
+    SensorDataValueModel *ringbuffer;
+    ringbuffer = shmem;
+    ringbuffer[ringbuffer_index] = sample;
+    ringbuffer_index++;
 }
 
 /**
@@ -121,7 +74,7 @@ static void timer_proc(rtdm_timer_t *timer)
 	//RT_PIPE_MSG *msgout;
 	//int len;
     static int firstrun = 0;
-    
+    SensorDataValueModel currentSample;
 
     // For latency measuring
     now = rtdm_clock_read_monotonic();
@@ -132,33 +85,42 @@ static void timer_proc(rtdm_timer_t *timer)
         previous = now;
     }
     
-    if(recorderState==rec_state_running)
+    if(get_recorder_state()==rec_state_running)
     {
+        char *ch_shmem;
+        ch_shmem = shmem;
         /* FIXME: Don't use a Linux kernel-function here, 
            because of possible real time violation through 
            context-switching */
-        if(gpio_get_value(17))
+        currentSample.sensor_id = 0;
+        currentSample.sample_time = now;
+        
+        if(gpio_get_value(GPIO_PIN_1))
         {
+            currentSample.sensor_value = 1;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "HIGH %llu\n",
                         /*1000000000 - */(now - previous));
         }
         else
         {
+            currentSample.sensor_value = 0;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "LOW %llu\n",
                         /*1000000000 - */(now - previous));
         }
         
-        gpio_set_value(16, blink);
+        gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
+        
+        
         if(blink==0)
         {
             blink = 1;
-            shmem[0] = 1;
+            ch_shmem[0] = 0;
             //datarecorder_heap[0] = 1;
         }
         else
         {
+            ch_shmem[0] = 1;
             blink = 0;
-            shmem[0] = 0;
         }
         
     }
@@ -180,12 +142,11 @@ static int datarecorder_init(void)
 	int err;
     DPRINT("Initializing Datarecorder...");
     
-    
 	/* Create the heap in kernel space */
     rtdm_printk(KERN_INFO DPRINT_PREFIX
                 "Reserving %d MB for shared memory RecorderRingbufferHeap... ",
                 ringbuffer_size_mb);
-	err = rt_heap_create(&datarecorder_heap, SHM_NAME,
+    err = rt_heap_create(&datarecorder_heap, SHM_NAME,
                          ringbuffer_size_mb * 1024 * 1024,H_SHARED);
     
     switch(err) {
@@ -207,7 +168,7 @@ static int datarecorder_init(void)
             DPRINT("Mode specifies H_MAPPABLE, but the real-time support in user-space is unavailable. :(");
             return -1;
         default:
-            rtdm_printk(KERN_INFO DPRINT_PREFIX "Can't create pipe :( - rt_pipe_create returned value %d\n", err);
+            rtdm_printk(KERN_INFO DPRINT_PREFIX "Can't create heap :( - rt_heap_create returned value %d\n", err);
             return -1;
     }
 
@@ -220,59 +181,6 @@ static int datarecorder_init(void)
             break;
         default:
             rtdm_printk(KERN_INFO DPRINT_PREFIX "rt_heap_alloc returned %d\n", err);
-            return -1;
-    }
-    
-	/* Connect the kernel-side of the message pipe to the
-     special device file /dev/rtp7. */
-    DPRINT("Creating Real Time Recorder Control Pipe /dev/rtp7...");
-    err = rt_pipe_create(&pipe_desc,"RecorderControlPipe",7,0);
-
-    switch(err) {
-        case 0:
-            DPRINT("Pipe created :)");
-            break;
-        case ENOMEM:
-            DPRINT("Can't create pipe :( - No more Memory");
-            return -1;
-            break;
-        case EEXIST:
-            DPRINT("Can't create pipe :( - Pipe already exists");
-            return -2;
-            break;
-        case ENODEV:
-            DPRINT("Can't create pipe :( - Pipe minor number is invalid");
-            return -3;
-            break;
-        case EBUSY:
-            DPRINT("Can't create pipe :( - The pipe is already opened");
-            return -4;
-            break;
-        case EPERM:
-            DPRINT("Can't create pipe :( - The service was called from an asynchronous context");
-            return -5;
-            break;
-        default:
-            rtdm_printk(KERN_INFO DPRINT_PREFIX "Can't create pipe :( - rt_pipe_create returned value %d\n", err);
-            return -6;
-    }
-    
-    DPRINT("Creating and starting Real Time Recorder Control Task...");
-    err = rt_task_create(&def_recorder_control_task, "RecorderControlTask",
-                         4096, 99, T_FPU);
-    switch(err) {
-        case 0:
-            break;
-        default:
-            DPRINT("Can't create task RecorderControlTask");
-            return -1;
-    }
-    err = rt_task_start(&def_recorder_control_task,&recorder_control_task,NULL);
-    switch(err) {
-        case 0:
-            break;
-        default:
-            DPRINT("Can't start task RecorderControlTask");
             return -1;
     }
     
@@ -295,7 +203,7 @@ static int datarecorder_init(void)
             DPRINT("Can't start sample timer task");
             return -1;
     }
-    recorderState = rec_state_running;
+    set_recorder_state(rec_state_running);
     DPRINT("Datarecorder initialized and running :)");
     
     return 0;
@@ -307,12 +215,6 @@ static int datarecorder_init(void)
 static void datarecorder_exit(void)
 {
     DPRINT("Exiting Datarecorder...");
-    
-    DPRINT("Deleting Control Pipe...");
-    rt_pipe_delete(&pipe_desc);
-    
-    DPRINT("Stopping Control Task...");
-    rt_task_delete(&def_recorder_control_task);
     
     DPRINT("Stopping Sample Timer...");
 	rtdm_timer_stop(&datarecorder_timer);
