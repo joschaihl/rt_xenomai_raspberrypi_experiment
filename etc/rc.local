@@ -2,35 +2,15 @@
 #
 # rc.local
 #
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-#
-#echo "Starting Xenomai-Realtime-Kernel-Module..."
-#/sbin/insmod /opt/rtraspberrylinu-code/xenomai_cokernelmodule_datarecorder/datarecorder.ko
-#/opt/www/start_django_datarecorder_as_local_tcp_socket.sh
 /opt/www/django_datarecorder/manage.py runfcgi method=threaded host=127.0.0.1 port=3033
 
-SYSVER=`uname -s -r`
-FREESPACE=`/usr/bin/freespace`
 
 # Get sure that sudoers has 0 as uid 
 chown root:root /etc/sudoers
 
+# Disable Standby for debugging messages
 sh -c 'setterm -blank 0 -powersave off -powerdown 0 < /dev/console > /dev/console 2>&1'
-espeak -vde "System $SYSVER wurde gestartet."
-espeak -vde "Freier Speicherplatz auf Wurzel-Dateisystem ist $FREESPACE Gigabeit"
-#espeak -vde "Echtzeit-Datenrekoder-Applikation konnte nicht gestartet werden."
-ZEIT="Es ist jetzt `date '+%H Uhr %M'` und der `date '+%ete%mte%Y'`"
-espeak -vde -s 140 -p 10 "$ZEIT"
-# Print the IP address
-_IP=$(hostname -I) || true
-if [ "$_IP" ]; then
-  HIP=`echo $_IP |sed -e 's/\./ punkt /g'`
-  printf "Meine Eipiadresse ist %s\n" "$HIP" | espeak -vde -s140
-fi
-espeak -vde "`/usr/games/fortune /usr/share/games/fortunes/de/murphy`" -s 140
+
+sh /etc/voice_startup.sh &
+
 exit 0
