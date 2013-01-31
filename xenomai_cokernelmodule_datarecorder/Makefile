@@ -1,9 +1,10 @@
 ARCH=arm
-MODULES = control_pipe rec_state datarecorder
+MODULES = control_pipe rec_state rec_ringbuffer datarecorder
 KSRC ?= /lib/modules/$(shell uname -r)/build
 #KSRC ?= /lib/modules/3.2.21+/build
 KBIN ?= /lib/modules/$(shell uname -r)/kernel
 OBJS     := ${patsubst %, %.o, $(MODULES)}
+KOBJS		 := ${patsubst %, %.ko, $(MODULES)}
 CLEANMOD := ${patsubst %, .%*, $(MODULES)}
 PWD      := $(shell if [ "$$PWD" != "" ]; then echo $$PWD; else pwd; fi)
 USPACE_CFLAGS	:=	`xeno-config --skin native --cflags`
@@ -18,8 +19,8 @@ all::
 	$(RM) *.o
 
 modules_install::
-	mkdir $(KBIN)/datarecorder
-	cp control_pipe.ko rec_state.ko datarecorder.ko $(KBIN)/datarecorder
+	mkdir -p $(KBIN)/datarecorder
+	cp $(KOBJS) $(KBIN)/datarecorder
 	depmod -a
 
 clean::
