@@ -43,10 +43,13 @@ int main (int argc, char *argv[])
     rt_heap_alloc(&heap_desc,0,TM_NONBLOCK,&shared_mem);
     
     //char *ch_Ptr = (char *) shared_mem;
-    SensorDataValueModel *ringbuffer = shared_mem;
-    for(i = 0; i < 1000;i++)
+    RingBuffer *rb = shared_mem;
+    
+    //SensorData *ringbuffer = shared_mem;
+    printf("Ringbuffer size = %llu, overflows = %llu\n", rb->size, rb->overflows);
+    for(i = 0; i < rb->size;i++)
     {
-        printf("%u %llu %u\n", ringbuffer[i].sensor_id, ringbuffer[i].sample_time, ringbuffer[i].sensor_value);
+        printf("%u %llu %u\n", rb->sensorData[i].sensorID, rb->sensorData[i].sampleTimeCode, rb->sensorData[i].sensorValue);
     }
     //printf("shared_mem[%d]=%d\n",0,ch_Ptr[0]);
 

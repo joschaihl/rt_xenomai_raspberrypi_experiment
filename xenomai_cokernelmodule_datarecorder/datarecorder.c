@@ -45,7 +45,7 @@ static void timer_proc(rtdm_timer_t *timer)
 	//RT_PIPE_MSG *msgout;
 	//int len;
     static int firstrun = 0;
-    SensorDataValueModel currentSample;
+    SensorData currentSample;
 
     // For latency measuring
     now = rtdm_clock_read_monotonic();
@@ -73,26 +73,24 @@ static void timer_proc(rtdm_timer_t *timer)
 
 
         rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
-        currentSample.sensor_id = 0;
-        currentSample.sample_time = now;
+        currentSample.sensorID = 0;
+        currentSample.sampleTimeCode = now;
         
         if(gpio_get_value(GPIO_PIN_1))
         {
-            currentSample.sensor_value = 1;
+            currentSample.sensorValue = 1;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "HIGH %llu\n",
                         /*1000000000 - */(now - previous));
         }
         else
         {
-            currentSample.sensor_value = 0;
+            currentSample.sensorValue = 0;
             rtdm_printk(KERN_INFO DPRINT_PREFIX "LOW %llu\n",
                         /*1000000000 - */(now - previous));
         }
         insertSampleToRingBuffer(currentSample);
         
         gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
-        
-        
         
         if(blink==0)
         {

@@ -27,5 +27,6 @@ modules_install::
 
 clean::
 	$(RM) $(CLEANMOD) *.o *.ko *.mod.c Module*.symvers Module.markers modules.order read_shm
+	$(RM) .*.o .*.ko .*.cmd
 	$(RM) -R .tmp*
 	

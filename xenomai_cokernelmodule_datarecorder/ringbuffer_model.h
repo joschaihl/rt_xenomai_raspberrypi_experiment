@@ -1,15 +1,28 @@
 #ifndef __RINGBUFFER_MODEL_H_
 #define __RINGBUFFER_MODEL_H_
 
-#define MB 1024 * 1024
+#define KB 1024
+#define MB (KB * KB)
 
 #define SHM_NAME "RecorderRingbufferHeap"
-#define SHM_SIZE (64 * MB)
+//#define MAX_RINGBUFFER_SAMPLES 4000000
+#define MAX_RINGBUFFER_SAMPLES 10
+#define SHM_SIZE sizeof(RingBuffer)
 
 typedef struct {
-    uint8_t sensor_id;
-    uint64_t sample_time;
-    uint8_t sensor_value;
-} SensorDataValueModel;
+    unsigned char sensorID;
+    unsigned long long sampleTimeCode;
+    unsigned char sensorValue;
+} SensorData;
+
+typedef struct {
+  /* The maximum index (should never be bigger than MAX_RINGBUFFER_SAMPLES) of the ringbuffer */
+	unsigned long long size;
+	/* The current index */
+	unsigned long long index;
+	/* Will be incremented after reaching the end of the ringbuffer */
+	unsigned long long overflows;
+	SensorData sensorData[MAX_RINGBUFFER_SAMPLES];
+} RingBuffer;
 
 #endif

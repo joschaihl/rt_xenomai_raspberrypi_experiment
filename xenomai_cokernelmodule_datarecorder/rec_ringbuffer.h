@@ -3,6 +3,6 @@
 
 #include "ringbuffer_model.h"
 
-void insertSampleToRingBuffer(SensorDataValueModel sample);
+void insertSampleToRingBuffer(SensorData sample);
 
 #endif

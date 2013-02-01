@@ -1,5 +1,5 @@
 echo "=== Building ==="
-make clean
+#make clean
 make 
 echo "=== Installing ==="
 sudo make modules_install

@@ -15,17 +15,20 @@ unsigned int ringbuffer_max_index = 1000;
 
 
 RT_HEAP datarecorder_heap;
-void *shmem;
+void *shmem = NULL;
+RingBuffer *ringBuffer = NULL;
 
-void insertSampleToRingBuffer(SensorDataValueModel sample)
-{
-    SensorDataValueModel *ringbuffer;
-    ringbuffer = shmem;
-    ringbuffer[ringbuffer_index] = sample;
-    ringbuffer_index++;
-    if(ringbuffer_index > ringbuffer_max_index)
+void insertSampleToRingBuffer(SensorData sample)
+{    
+    ringBuffer->sensorData[ringBuffer->index] = sample;
+    if(ringBuffer->index < (ringBuffer->size -1))
     {
-    	ringbuffer_index = 0;
+    	ringBuffer->index++;
+    }
+    else
+    {
+    	ringBuffer->overflows++;
+    	ringBuffer->index = 0;
     }
 }
 
@@ -34,8 +37,8 @@ static int rec_ringuffer_init(void)
     int err;
 		/* Create the heap in kernel space */
     rtdm_printk(KERN_INFO DPRINT_PREFIX
-                "Reserving %d MB for shared memory RecorderRingbufferHeap... ",
-                SHM_SIZE / MB);
+                "Reserving %d Bytes = %d KB = %d MB = %d Samples for shared memory RecorderRingbufferHeap... ",
+                SHM_SIZE, SHM_SIZE / KB, SHM_SIZE / MB, MAX_RINGBUFFER_SAMPLES);
     err = rt_heap_create(&datarecorder_heap, SHM_NAME,
                          SHM_SIZE, H_SHARED);
   
@@ -76,6 +79,12 @@ static int rec_ringuffer_init(void)
     
     /* Zero-Padding */
     memset(shmem, 0, SHM_SIZE);
+    
+    /* Initializing ringbuffer */
+    ringBuffer = shmem;
+    ringBuffer->size = MAX_RINGBUFFER_SAMPLES;
+    ringBuffer->index = 0;
+    ringBuffer->overflows = 0;
     return 0;
 }
 
