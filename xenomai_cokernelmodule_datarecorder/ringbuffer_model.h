@@ -6,7 +6,7 @@
 
 #define SHM_NAME "RecorderRingbufferHeap"
 //#define MAX_RINGBUFFER_SAMPLES 4000000
-#define MAX_RINGBUFFER_SAMPLES 10
+#define MAX_RINGBUFFER_SAMPLES 10000
 #define SHM_SIZE sizeof(RingBuffer)
 
 typedef struct {

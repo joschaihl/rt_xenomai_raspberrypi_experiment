@@ -30,7 +30,7 @@
 #include <rtdm/rtdm_driver.h>
 
 /* Datastructures for sample timer */
-int frequency = 1000 * 1000 * 1000;
+int frequency = 1 * 1000 * 1000;
 rtdm_task_t timer_task;
 rtdm_timer_t datarecorder_timer;
 
@@ -71,22 +71,27 @@ static void timer_proc(rtdm_timer_t *timer)
         
         //long seconds = tspec.tv_sec;
 
-
+				#ifdef __DEBUG__
         rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
+        #endif
         currentSample.sensorID = 0;
         currentSample.sampleTimeCode = now;
         
         if(gpio_get_value(GPIO_PIN_1))
         {
             currentSample.sensorValue = 1;
+            #ifdef __DEBUG__
             rtdm_printk(KERN_INFO DPRINT_PREFIX "HIGH %llu\n",
                         /*1000000000 - */(now - previous));
+            #endif
         }
         else
         {
             currentSample.sensorValue = 0;
+            #ifdef __DEBUG__
             rtdm_printk(KERN_INFO DPRINT_PREFIX "LOW %llu\n",
                         /*1000000000 - */(now - previous));
+          	#endif
         }
         insertSampleToRingBuffer(currentSample);
         

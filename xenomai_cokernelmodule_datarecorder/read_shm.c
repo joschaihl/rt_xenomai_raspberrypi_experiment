@@ -23,8 +23,8 @@ void cleanup (void)
 int main (int argc, char *argv[])
 
 {
-    int err, i;
-
+    int err;
+    unsigned long long i;
     /* Bind to a shared heap which has been created elsewhere, either
        in kernel or user-space. Here we cannot wait and the heap must
        be available at once, since the caller is not a Xenomai-enabled
@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
     printf("Ringbuffer size = %llu, overflows = %llu\n", rb->size, rb->overflows);
     for(i = 0; i < rb->size;i++)
     {
-        printf("%u %llu %u\n", rb->sensorData[i].sensorID, rb->sensorData[i].sampleTimeCode, rb->sensorData[i].sensorValue);
+        printf("Sample %llu: %u %llu %u\n", i, rb->sensorData[i].sensorID, rb->sensorData[i].sampleTimeCode, rb->sensorData[i].sensorValue);
     }
     //printf("shared_mem[%d]=%d\n",0,ch_Ptr[0]);
 

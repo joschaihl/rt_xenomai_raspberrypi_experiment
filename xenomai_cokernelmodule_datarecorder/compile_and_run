@@ -1,6 +1,7 @@
 echo "=== Building ==="
-#make clean
+make clean
 make 
+make read_shm
 echo "=== Installing ==="
 sudo make modules_install
 echo "=== Loading ==="

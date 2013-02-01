@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
 from django.core.context_processors import csrf
 from xenomai_interface.recordercontroller import RecorderController
+from xenomai_interface.ringbuffer import RingBuffer
 
 import os, time
 
@@ -85,9 +86,14 @@ def main_page(request):
     recordingIsActive = environmentModel.globalRecordingIsActive;
     
     systemtime = time.asctime(time.localtime())
+    rbuf = RingBuffer()
+    rbufdata = rbuf.get()
+    
+    
   	#time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({
     										 'systemtime': systemtime,
+    										 'rbufdata': rbufdata,
                          'recordingIsActive': recordingIsActive,
                          'user': request.user
     });
