@@ -1,0 +1,7 @@
+echo "=== Building ==="
+make clean
+make 
+echo "=== Installing ==="
+sudo make modules_install
+echo "=== Loading ==="
+sudo ./restart.sh

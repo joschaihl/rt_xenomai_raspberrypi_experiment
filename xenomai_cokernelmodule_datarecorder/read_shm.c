@@ -1,6 +1,7 @@
+#include <stdint.h>
+#include "ringbuffer_model.h"
 #include <native/heap.h>
 
-#define SHM_NAME "RecorderRingbufferHeap"
 RT_HEAP heap_desc;
 
 void *shared_mem; /* Start address of the shared memory segment */
@@ -11,10 +12,18 @@ void *shared_mem; /* Start address of the shared memory segment */
    the heap memory to all callers, and the free routine always leads
    to a no-op. */
 
+void cleanup (void)
+{
+    /* We need to unbind explicitly from the heap in order to
+       properly release the underlying memory mapping. Exiting the
+       process unbinds all mappings automatically. */
+    rt_heap_unbind(&heap_desc);
+}
+
 int main (int argc, char *argv[])
 
 {
-    int err;
+    int err, i;
 
     /* Bind to a shared heap which has been created elsewhere, either
        in kernel or user-space. Here we cannot wait and the heap must
@@ -33,18 +42,17 @@ int main (int argc, char *argv[])
        "timeout" arguments are unused here. */
     rt_heap_alloc(&heap_desc,0,TM_NONBLOCK,&shared_mem);
     
-    char *ch_Ptr = (char *) shared_mem;
-    printf("shared_mem[%d]=%d\n",0,ch_Ptr[0]);
+    //char *ch_Ptr = (char *) shared_mem;
+    SensorDataValueModel *ringbuffer = shared_mem;
+    for(i = 0; i < 1000;i++)
+    {
+        printf("%u %llu %u\n", ringbuffer[i].sensor_id, ringbuffer[i].sample_time, ringbuffer[i].sensor_value);
+    }
+    //printf("shared_mem[%d]=%d\n",0,ch_Ptr[0]);
 
     /* ... */
-    //cleanup();
+    cleanup();
 }
 
-void cleanup (void)
-{
-    /* We need to unbind explicitly from the heap in order to
-       properly release the underlying memory mapping. Exiting the
-       process unbinds all mappings automatically. */
-    rt_heap_unbind(&heap_desc);
-}
+
 

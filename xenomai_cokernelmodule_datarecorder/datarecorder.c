@@ -18,6 +18,8 @@
 /* GPIO Pin configuration */
 #include <mach/gpio.h>
 
+#include <time.h>
+
 #define GPIO_PIN_1 17
 #define GPIO_PIN_SAMPLE_STATUS_LED 16
 
@@ -59,6 +61,18 @@ static void timer_proc(rtdm_timer_t *timer)
         /* FIXME: Don't use a Linux kernel-function here, 
            because of possible real time violation through 
            context-switching */
+        struct timespec tspec;
+        jiffies_to_timespec(now, &tspec);
+        
+        //struct tm * ptm = localtime(&tspec);
+        //char buffer[26];
+        // Format: Do, 23.10.2007 10:45:51
+        //strftime (buffer, 26, "%a, %d.%m.%Y %H:%M:%S", tspec.tv_sec);
+        
+        //long seconds = tspec.tv_sec;
+
+
+        rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
         currentSample.sensor_id = 0;
         currentSample.sample_time = now;
         
@@ -77,6 +91,7 @@ static void timer_proc(rtdm_timer_t *timer)
         insertSampleToRingBuffer(currentSample);
         
         gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
+        
         
         
         if(blink==0)

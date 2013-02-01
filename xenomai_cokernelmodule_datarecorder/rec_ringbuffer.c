@@ -10,9 +10,9 @@
 #include <native/heap.h>
 
 /* Datastructes for shared memory */
-unsigned int ringbuffer_size_mb = 16;
 unsigned int ringbuffer_index = 0;
 unsigned int ringbuffer_max_index = 1000;
+
 
 RT_HEAP datarecorder_heap;
 void *shmem;
@@ -31,13 +31,13 @@ void insertSampleToRingBuffer(SensorDataValueModel sample)
 
 static int rec_ringuffer_init(void)
 {
-		int err;
+    int err;
 		/* Create the heap in kernel space */
     rtdm_printk(KERN_INFO DPRINT_PREFIX
                 "Reserving %d MB for shared memory RecorderRingbufferHeap... ",
-                ringbuffer_size_mb);
+                SHM_SIZE / MB);
     err = rt_heap_create(&datarecorder_heap, SHM_NAME,
-                         ringbuffer_size_mb * 1024 * 1024,H_SHARED);
+                         SHM_SIZE, H_SHARED);
   
     switch(err) {
         case 0:
@@ -62,6 +62,7 @@ static int rec_ringuffer_init(void)
             return -1;
     }
 
+    
 		/* Get the shared memory address */
     DPRINT("Get a shared memory address...");
 		err = rt_heap_alloc(&datarecorder_heap,0,TM_NONBLOCK,&shmem);
@@ -72,6 +73,9 @@ static int rec_ringuffer_init(void)
             rtdm_printk(KERN_INFO DPRINT_PREFIX "rt_heap_alloc returned %d\n", err);
             return -1;
     }
+    
+    /* Zero-Padding */
+    memset(shmem, 0, SHM_SIZE);
     return 0;
 }
 
