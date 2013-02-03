@@ -1,5 +1,5 @@
 echo "===Cleaning workspace==="
-make clean -C xenomai_cokernelmodule_datarecorder/
+make clean
 echo "===Adding new files==="
 git add -A
 echo "===Commiting==="

@@ -23,11 +23,12 @@ all::
 	$(MAKE) -C $(KSRC) MAKEFILE_CONF=$(PWD)/$(MAKEFILE_CONF) DATARECORDER_LIB=$(DATARECORDER_LIB) ARCH=$(ARCH) SUBDIRS=$(PWD) $(DATARECORDER_LIB) modules
 	$(RM) *.o
 
-modules_install::
+install::
 	mkdir -p $(KBIN)/datarecorder
-	cp $(KOBJS) $(KBIN)/datarecorder
+	$(INSTALL) $(KOBJS) $(KBIN)/datarecorder
 	depmod -a
-
+	./restart.sh
+	
 clean::
 	$(RM) $(CLEANMOD) *.o *.ko *.mod.c Module*.symvers Module.markers modules.order
 	$(RM) .*.o .*.ko .*.cmd

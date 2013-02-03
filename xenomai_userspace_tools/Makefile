@@ -11,11 +11,11 @@ $(TARGET): $(OBJS)
 	$(CC) $(USPACE_CFLAGS) -c $< -o $@
 	
 install:
-	cp $(U_MODULES) /sbin
+	$(INSTALL) $(U_MODULES) /sbin
 
 # remove object files and core (if any)
 clean:
-	$(RM) *.o core *._*.*
+	$(RM) *.o core ._*
 
 # remove object files, core dump, and executable (if any)
 distclean:

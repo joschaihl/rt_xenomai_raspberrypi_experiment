@@ -9,25 +9,41 @@ CLEANDIRS = $(DIRS:%=clean-%)
 TESTDIRS = $(DIRS:%=test-%)
 
 all: $(BUILDDIRS)
+	@echo "==== Make done ===="
 $(DIRS): $(BUILDDIRS)
 $(BUILDDIRS):
+	@echo "==== Make $(@:build-%=%) ===="
 	$(MAKE) -C $(@:build-%=%)
 
-# the utils need the libraries in dev built first
-build-utils: build-dev
+## the utils need the libraries in dev built first
+#build-utils: build-dev
 
-install: $(INSTALLDIRS) all
+install: $(INSTALLDIRS)
+	@echo "==== Installing done ===="
+	
 $(INSTALLDIRS):
+	@echo "==== Installing $(@:install-%=%) ===="
 	$(MAKE) -C $(@:install-%=%) install
 
-test: $(TESTDIRS) all
-$(TESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
+#test: $(TESTDIRS) all
+#$(TESTDIRS): 
+#	@echo "Test"#
+#	$(MAKE) -C $(@:test-%=%) test
+
+commit: clean
+	@echo "===Adding new files==="
+	$(GIT) add -A
+	@echo "===Commiting==="
+	$(GIT) commit
+	$(GIT) push
+
 
 clean: $(CLEANDIRS)
+	@echo "==== Cleaning ===="
 	$(RM) ._*
 	
 $(CLEANDIRS): 
+	@echo "==== Cleaning $(@:clean-%=%) ===="
 	$(MAKE) -C $(@:clean-%=%) clean
 
 
