@@ -20,7 +20,6 @@ void cleanup (void)
 }
 
 int main (int argc, char *argv[])
-
 {
     int err;
     unsigned long long i;

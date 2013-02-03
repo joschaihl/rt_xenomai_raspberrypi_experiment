@@ -30,7 +30,6 @@ static int rec_ringuffer_init(void)
                 SHM_SIZE, SHM_SIZE / KB, SHM_SIZE / MB, MAX_RINGBUFFER_SAMPLES);
     err = rt_heap_create(&datarecorder_heap, SHM_NAME,
                          SHM_SIZE, H_SHARED);
-  
     switch(err) {
         case 0:
             break;
@@ -80,7 +79,7 @@ static int rec_ringuffer_init(void)
 static void rec_ringbuffer_exit(void)
 {
     DPRINT("Removing Shared Memory");
-		rt_heap_delete(&datarecorder_heap);
+	rt_heap_delete(&datarecorder_heap);
 }
 
 module_init(rec_ringuffer_init);

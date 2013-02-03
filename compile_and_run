@@ -1,9 +1,0 @@
-echo "=== Building ==="
-make clean
-make 
-make read_shm
-echo "=== Installing ==="
-sudo make modules_install
-sudo make install
-echo "=== Loading ==="
-sudo ./restart.sh

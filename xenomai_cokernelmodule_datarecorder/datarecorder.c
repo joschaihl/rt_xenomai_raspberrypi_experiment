@@ -56,7 +56,7 @@ static void timer_proc(rtdm_timer_t *timer)
     
     if(get_recorder_state()==rec_state_running)
     {
-				#ifdef DEBUG_DATARECORDER
+		#ifdef DEBUG_DATARECORDER
         rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
         #endif
         currentSample.sensorID = 0;

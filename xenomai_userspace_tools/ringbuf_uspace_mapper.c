@@ -1,4 +1,4 @@
-#include "xen_ringbuffer_model.h"
+#include "xen_ringbuf_model.h"
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
