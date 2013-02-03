@@ -9,7 +9,7 @@
 #define MAX_RINGBUFFER_SAMPLES 10000
 #define SHM_SIZE sizeof(RingBuffer)
 
-typedef struct {
+typedef struct __attribute__((packed)){
     unsigned char sensorID;
     unsigned long long sampleTimeCode;
     unsigned char sensorValue;

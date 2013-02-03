@@ -1,3 +1,4 @@
+#include "xen_ringbuf_model.h"
 #include "print.h"
 #include "rec_ringbuffer.h"
 
@@ -5,18 +6,6 @@
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
-
-/* Shared Memory */
-#include <native/heap.h>
-
-/* Datastructes for shared memory */
-unsigned int ringbuffer_index = 0;
-unsigned int ringbuffer_max_index = 1000;
-
-
-RT_HEAP datarecorder_heap;
-void *shmem = NULL;
-RingBuffer *ringBuffer = NULL;
 
 void insertSampleToRingBuffer(SensorData sample)
 {    
@@ -35,7 +24,7 @@ void insertSampleToRingBuffer(SensorData sample)
 static int rec_ringuffer_init(void)
 {
     int err;
-		/* Create the heap in kernel space */
+    /* Create the heap in kernel space */
     rtdm_printk(KERN_INFO DPRINT_PREFIX
                 "Reserving %d Bytes = %d KB = %d MB = %d Samples for shared memory RecorderRingbufferHeap... ",
                 SHM_SIZE, SHM_SIZE / KB, SHM_SIZE / MB, MAX_RINGBUFFER_SAMPLES);
@@ -66,7 +55,7 @@ static int rec_ringuffer_init(void)
     }
 
     
-		/* Get the shared memory address */
+    /* Get the shared memory address */
     DPRINT("Get a shared memory address...");
 		err = rt_heap_alloc(&datarecorder_heap,0,TM_NONBLOCK,&shmem);
     switch(err) {

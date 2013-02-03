@@ -8,11 +8,13 @@
 
 void parse_recorder_control_cmd(char *control_string, unsigned int string_length)
 {
+		#ifdef DEBUG_DATARECORDER
     unsigned int i;
     for(i=0; i< string_length;i++)
     {
         rtdm_printk(KERN_INFO DPRINT_PREFIX "string[%d] = %c = %d", i, control_string[i], control_string[i]);
     }
+    #endif
     if(strncmp(control_string, "start\n", string_length)==0)
     {
         DPRINT("START");

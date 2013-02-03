@@ -42,8 +42,6 @@ int blink = 0;
  */
 static void timer_proc(rtdm_timer_t *timer)
 {
-	//RT_PIPE_MSG *msgout;
-	//int len;
     static int firstrun = 0;
     SensorData currentSample;
 
@@ -58,29 +56,15 @@ static void timer_proc(rtdm_timer_t *timer)
     
     if(get_recorder_state()==rec_state_running)
     {
-        /* FIXME: Don't use a Linux kernel-function here, 
-           because of possible real time violation through 
-           context-switching */
-        struct timespec tspec;
-        jiffies_to_timespec(now, &tspec);
-        
-        //struct tm * ptm = localtime(&tspec);
-        //char buffer[26];
-        // Format: Do, 23.10.2007 10:45:51
-        //strftime (buffer, 26, "%a, %d.%m.%Y %H:%M:%S", tspec.tv_sec);
-        
-        //long seconds = tspec.tv_sec;
-
-				#ifdef __DEBUG__
+				#ifdef DEBUG_DATARECORDER
         rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
         #endif
         currentSample.sensorID = 0;
         currentSample.sampleTimeCode = now;
-        
         if(gpio_get_value(GPIO_PIN_1))
         {
             currentSample.sensorValue = 1;
-            #ifdef __DEBUG__
+            #ifdef DEBUG_DATARECORDER
             rtdm_printk(KERN_INFO DPRINT_PREFIX "HIGH %llu\n",
                         /*1000000000 - */(now - previous));
             #endif
@@ -88,15 +72,13 @@ static void timer_proc(rtdm_timer_t *timer)
         else
         {
             currentSample.sensorValue = 0;
-            #ifdef __DEBUG__
+            #ifdef DEBUG_DATARECORDER
             rtdm_printk(KERN_INFO DPRINT_PREFIX "LOW %llu\n",
                         /*1000000000 - */(now - previous));
           	#endif
         }
         insertSampleToRingBuffer(currentSample);
-        
         gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
-        
         if(blink==0)
         {
             blink = 1;
@@ -106,12 +88,10 @@ static void timer_proc(rtdm_timer_t *timer)
             blink = 0;
         }
     }
-    
     if(firstrun==0)
     {
         firstrun = 1;
     }
-    
     // For latency measuring
     previous = rtdm_clock_read_monotonic();
 }
@@ -123,7 +103,6 @@ static int datarecorder_init(void)
 {
 	int err;
     DPRINT("Initializing Datarecorder...");
-    
     DPRINT("Starting Real Time Recorder Sample Timer Task...");
     err = rtdm_timer_init(&datarecorder_timer, timer_proc,
                     "datarecorder_sample_timer");
@@ -145,7 +124,6 @@ static int datarecorder_init(void)
     }
     set_recorder_state(rec_state_running);
     DPRINT("Datarecorder initialized and running :)");
-    
     return 0;
 }
 

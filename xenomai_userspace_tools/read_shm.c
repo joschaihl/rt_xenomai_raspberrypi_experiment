@@ -1,5 +1,4 @@
-#include <stdint.h>
-#include "ringbuffer_model.h"
+#include <ringbuffer_model.h>
 #include <native/heap.h>
 
 RT_HEAP heap_desc;
@@ -30,7 +29,6 @@ int main (int argc, char *argv[])
        be available at once, since the caller is not a Xenomai-enabled
        thread. The heap should have been created with the H_SHARED
        mode set. */
-
     err = rt_heap_bind(&heap_desc,SHM_NAME,TM_NONBLOCK);
 
     if (err)
@@ -42,18 +40,13 @@ int main (int argc, char *argv[])
        "timeout" arguments are unused here. */
     rt_heap_alloc(&heap_desc,0,TM_NONBLOCK,&shared_mem);
     
-    //char *ch_Ptr = (char *) shared_mem;
     RingBuffer *rb = shared_mem;
-    
-    //SensorData *ringbuffer = shared_mem;
-    printf("Ringbuffer size = %llu, overflows = %llu\n", rb->size, rb->overflows);
+  	printf("Ringbuffer size = %llu, overflows = %llu\n", rb->size, rb->overflows);
     for(i = 0; i < rb->size;i++)
     {
         printf("Sample %llu: %u %llu %u\n", i, rb->sensorData[i].sensorID, rb->sensorData[i].sampleTimeCode, rb->sensorData[i].sensorValue);
     }
-    //printf("shared_mem[%d]=%d\n",0,ch_Ptr[0]);
-
-    /* ... */
+    
     cleanup();
 }
 
