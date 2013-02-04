@@ -15,9 +15,9 @@ install:
 
 # remove object files and core (if any)
 clean:
+	$(RM) $(TARGET)
 	$(RM) *.o core ._*
 
 # remove object files, core dump, and executable (if any)
 distclean:
 	$(MAKE) clean
-	$(RM) $(TARGET)
