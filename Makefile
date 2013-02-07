@@ -40,6 +40,7 @@ commit: clean
 
 clean: $(CLEANDIRS)
 	@echo "==== Cleaning ===="
+	$(RM) -fr html/ latex/
 	$(RM) ._*
 	
 $(CLEANDIRS): 
