@@ -1,2 +1,22 @@
 <h2>Sensor-Data</h2>
-{{rbufdata}}
+
+{{rbufdata|safe}}
+
+{% comment %}
+Die Template Programmiersprache von Django ist leider sehr langsam
+beim Iterieren von Daten über Liste.
+Bei 1000 Zeilen einer Tabelle dauert das Laden knapp 10 Sekunden!
+Das ist praktisch leider unbenutzbar für das aktuelle Projekt denn es
+würde selbst bei kleinen Tabellen nur kostbare Rechenzeit in Anspruch nehmen.
+
+<table>
+{% for item in rbufdata %}
+<tr>
+	<td>{{item.0}}</td>
+	<td>{{item.1}}</td>
+	<td>{{item.2}}</td>
+	<td>{{item.3}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endcomment %}

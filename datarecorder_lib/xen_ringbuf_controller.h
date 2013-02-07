@@ -23,12 +23,12 @@ int init_shmem_consumer(void)
 
     rt_heap_alloc(&datarecorder_heap,0,TM_NONBLOCK,&shmem);
 
-    ringBuffer = shmem;
+    ringBuffer = (RingBuffer *) shmem;
     return 0;
 }
 
 
-void cleanup (void)
+void cleanup_shmem_consumer (void)
 {
     /* We need to unbind explicitly from the heap in order to
        properly release the underlying memory mapping. Exiting the
