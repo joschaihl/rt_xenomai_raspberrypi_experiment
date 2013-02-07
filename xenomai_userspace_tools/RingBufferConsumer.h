@@ -30,6 +30,7 @@ private:
 public:
 	RingBufferConsumer();
 	bool init();
+	bool setSize(long long ringBufferSize);
 	unsigned long long getSize()
 		throw(SharedMemoryNotInitialized);
     unsigned char getSensorID(unsigned long long index)

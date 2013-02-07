@@ -1,9 +1,12 @@
 include ../Makefile.conf
 U_TOOLS = read_shm_json
-U_MODULES = ArgumentParser RingBufferConsumer runner
-TEST_MODULES = RingBufferConsumer ArgumentParser
+TEST_RUNNER = runner
+MODULES = ArgumentParser RingBufferConsumer RingBufferIndex 
+TEST_MODULES = $(MODULES)
+U_MODULES = $(TEST_MODULES) $(TEST_RUNNER)
 #read_shm read_shm_raw read_shm_json read_shm_html shm_properties
 OBJS     	 := ${patsubst %, %.o, $(U_MODULES)}
+TEST_OBJS	 := ${patsubst %, %.o, $(U_MODULES)}
 TEST_HEADERS := ${patsubst %, %_test.h, $(TEST_MODULES)}
 
 TARGET       = runner $(U_TOOLS)
@@ -35,17 +38,20 @@ read_shm_json: ArgumentParser.o RingBufferConsumer.o read_shm_json.o
 read_shm_json.o: read_shm_json.cpp ArgumentParser.h RingBufferConsumer.h
 	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c read_shm_json.cpp -o read_shm_json.o
 	
-runner: $(OBJS)
-	$(C++) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner
-
-runner.o: runner.cpp
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c runner.cpp -o runner.o
-	
 ArgumentParser.o: ArgumentParser.cpp ArgumentParser.h
 	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c ArgumentParser.cpp -o ArgumentParser.o
 	
 RingBufferConsumer.o: RingBufferConsumer.cpp RingBufferConsumer.h DataRecorderExceptions.h
 	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferConsumer.cpp -o RingBufferConsumer.o
+
+RingBufferIndex.o: RingBufferIndex.h RingBufferIndex.cpp
+	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferIndex.cpp -o RingBufferIndex.o
+
+runner: $(TEST_OBJS)
+	$(C++) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner
+
+runner.o: runner.cpp
+	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c runner.cpp -o runner.o
 
 runner.cpp: $(TEST_HEADERS)
 	$(CXXTESTGEN) $(CXXTESTGEN_GEN_FLAGS) runner.cpp $(TEST_HEADERS)

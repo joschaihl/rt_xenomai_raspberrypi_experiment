@@ -7,8 +7,10 @@
 
 #include "RingBufferIndex.h"
 
-RingBufferIndex::RingBufferIndex(unsigned long long page, unsigned long long page_width)
- : index(0)
+RingBufferIndex::RingBufferIndex(RingBufferConsumer &ringBufferConsumer,
+		unsigned long long page,
+		unsigned long long page_width)
+ : index(0), ringBufferConsumer(ringBufferConsumer)
 {
 	this->page = page;
 	this->page_width = page_width;

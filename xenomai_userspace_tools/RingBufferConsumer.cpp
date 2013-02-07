@@ -57,6 +57,23 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 	}
 }
 
+bool RingBufferConsumer::setSize(long long ringBufferSize)
+{
+	bool result = false;
+	if(sharedMemoryIsReady==false)
+	{
+		throw SharedMemoryNotInitialized();
+	}
+
+	if(ringBufferSize <= MAX_RINGBUFFER_SAMPLES)
+	{
+		this->recorder_ringBuffer->size = ringBufferSize;
+		result = true;
+	}
+
+	return result;
+}
+
 unsigned long long RingBufferConsumer::getSize()
 throw(SharedMemoryNotInitialized)
 {

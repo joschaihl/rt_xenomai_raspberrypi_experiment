@@ -36,6 +36,24 @@ public:
 		TS_ASSERT_THROWS_NOTHING(rbuf.getSensorID(size-1));
 	}
 
+	void testRingBufferSetSize()
+	{
+		unsigned long long originalsize = rbuf.getSize();
+		TS_ASSERT(rbuf.setSize(100));
+
+		// Set the size to maximum value
+		TS_ASSERT(rbuf.setSize(MAX_RINGBUFFER_SAMPLES));
+
+		TS_ASSERT(!rbuf.setSize(MAX_RINGBUFFER_SAMPLES+1));
+
+		// Back to original value
+		TS_ASSERT(rbuf.setSize(originalsize));
+
+		// Check that
+		TS_ASSERT_EQUALS(rbuf.getSize(), originalsize);
+
+	}
+
 };
 
 #endif /*RINGBUFFERCONSUMER_TEST_H_*/
