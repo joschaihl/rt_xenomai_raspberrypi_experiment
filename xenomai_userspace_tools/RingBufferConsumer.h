@@ -33,6 +33,8 @@ public:
 	bool setSize(long long ringBufferSize);
 	unsigned long long getSize()
 		throw(SharedMemoryNotInitialized);
+	unsigned long long getCurrentIndex()
+		throw(SharedMemoryNotInitialized);
     unsigned char getSensorID(unsigned long long index)
     	throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
     unsigned long long getSampleTimeCode(unsigned long long index)

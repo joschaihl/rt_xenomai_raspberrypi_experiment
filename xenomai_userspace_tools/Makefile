@@ -1,7 +1,7 @@
 include ../Makefile.conf
 U_TOOLS = read_shm_json
 TEST_RUNNER = runner
-MODULES = ArgumentParser RingBufferConsumer RingBufferPageIndex 
+MODULES = ArgumentParser RingBufferConsumer RingBufferPageIndex RingBufferLastDataIndex
 TEST_MODULES = $(MODULES)
 U_MODULES = $(TEST_MODULES) $(TEST_RUNNER)
 #read_shm read_shm_raw read_shm_json read_shm_html shm_properties
@@ -44,8 +44,11 @@ ArgumentParser.o: ArgumentParser.cpp ArgumentParser.h
 RingBufferConsumer.o: RingBufferConsumer.cpp RingBufferConsumer.h DataRecorderExceptions.h
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferConsumer.cpp -o RingBufferConsumer.o
 
-RingBufferPageIndex.o: RingBufferPageIndex.h RingBufferPageIndex.cpp
+RingBufferPageIndex.o: RingBufferConsumer.h RingBufferPageIndex.h RingBufferPageIndex.cpp
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferPageIndex.cpp -o RingBufferPageIndex.o
+
+RingBufferLastDataIndex.o: RingBufferConsumer.h RingBufferLastDataIndex.h RingBufferLastDataIndex.cpp
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferLastDataIndex.cpp -o RingBufferLastDataIndex.o
 
 runner: $(TEST_OBJS)
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner

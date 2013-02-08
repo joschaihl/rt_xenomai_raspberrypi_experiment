@@ -27,7 +27,7 @@ public:
 		TS_ASSERT_THROWS(rbuf.getSensorID(0), SharedMemoryNotInitialized);
 		TS_ASSERT_THROWS(rbuf.getSampleTimeCode(0), SharedMemoryNotInitialized);
 		TS_ASSERT_THROWS(rbuf.setSize(rbuf.getSize()-1), SharedMemoryNotInitialized);
-
+		TS_ASSERT_THROWS(rbuf.getCurrentIndex(), SharedMemoryNotInitialized);
 		TS_ASSERT(rbuf.init());
 		unsigned long long size = rbuf.getSize();
 		TS_ASSERT_THROWS(rbuf.getSensorValue(size), IndexOutOfRangeException);
@@ -36,6 +36,7 @@ public:
 		TS_ASSERT_THROWS_NOTHING(rbuf.getSensorValue(size-1));
 		TS_ASSERT_THROWS_NOTHING(rbuf.getSampleTimeCode(size-1));
 		TS_ASSERT_THROWS_NOTHING(rbuf.getSensorID(size-1));
+		TS_ASSERT_THROWS_NOTHING(rbuf.getCurrentIndex());
 	}
 
 	void testRingBufferSetSize()

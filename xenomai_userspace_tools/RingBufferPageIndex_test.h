@@ -65,11 +65,6 @@ public:
 		TS_ASSERT_EQUALS(rbi.getPage(), 777);
 	}
 
-	void testGetIndex()
-	{
-
-	}
-
 	void testIncrementIndex()
 	{
 		RingBufferConsumer rb;

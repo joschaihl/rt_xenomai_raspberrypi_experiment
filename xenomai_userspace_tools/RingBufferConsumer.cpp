@@ -105,6 +105,16 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 	return recorder_ringBuffer->sensorData[index].sensorValue;
 }
 
+unsigned long long RingBufferConsumer::getCurrentIndex()
+	throw(SharedMemoryNotInitialized)
+{
+	if(sharedMemoryIsReady==false)
+	{
+		throw SharedMemoryNotInitialized();
+	}
+	return recorder_ringBuffer->index;
+}
+
 RingBufferConsumer::~RingBufferConsumer()
 {
 	/* We need to unbind explicitly from the heap in order to
