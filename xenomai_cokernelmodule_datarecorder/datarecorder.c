@@ -9,7 +9,6 @@
 #include "control_pipe.h"
 #include "rec_state.h"
 #include "rec_ringbuffer.h"
-
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
@@ -30,7 +29,7 @@
 #include <rtdm/rtdm_driver.h>
 
 /* Datastructures for sample timer */
-int frequency = 1 * 1000 * 1000;
+int frequency = 100 * 1000;
 rtdm_task_t timer_task;
 rtdm_timer_t datarecorder_timer;
 
@@ -56,9 +55,6 @@ static void timer_proc(rtdm_timer_t *timer)
     
     if(get_recorder_state()==rec_state_running)
     {
-		#ifdef DEBUG_DATARECORDER
-        rtdm_printk(KERN_INFO DPRINT_PREFIX "Jiffies: %llu\n", now);
-        #endif
         currentSample.sensorID = 0;
         currentSample.sampleTimeCode = now;
         if(gpio_get_value(GPIO_PIN_1))

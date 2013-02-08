@@ -14,6 +14,7 @@ class RingBufferPageIndex
 {
 	RingBufferConsumer &ringBufferConsumer;
 	unsigned long long index;
+	unsigned long long max_index;
 	unsigned long long page;
 	unsigned long long page_width;
 	unsigned long long count_pages;
