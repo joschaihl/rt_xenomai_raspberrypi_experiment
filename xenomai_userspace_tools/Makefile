@@ -1,7 +1,7 @@
 include ../Makefile.conf
 U_TOOLS = read_shm_json
 TEST_RUNNER = runner
-MODULES = ArgumentParser RingBufferConsumer RingBufferIndex 
+MODULES = ArgumentParser RingBufferConsumer RingBufferPageIndex 
 TEST_MODULES = $(MODULES)
 U_MODULES = $(TEST_MODULES) $(TEST_RUNNER)
 #read_shm read_shm_raw read_shm_json read_shm_html shm_properties
@@ -33,25 +33,25 @@ all: $(TARGET)
 #	$(C++) $(USPACE_CFLAGS) -c $< -o $@
 
 read_shm_json: ArgumentParser.o RingBufferConsumer.o read_shm_json.o
-	$(C++) $(DEBUG_FLAG) $(USPACE_LDFLAGS) ArgumentParser.o RingBufferConsumer.o read_shm_json.o $(LINKER-FLAGS) read_shm_json
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) ArgumentParser.o RingBufferConsumer.o read_shm_json.o $(LINKER-FLAGS) read_shm_json
 	
 read_shm_json.o: read_shm_json.cpp ArgumentParser.h RingBufferConsumer.h
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c read_shm_json.cpp -o read_shm_json.o
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c read_shm_json.cpp -o read_shm_json.o
 	
 ArgumentParser.o: ArgumentParser.cpp ArgumentParser.h
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c ArgumentParser.cpp -o ArgumentParser.o
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c ArgumentParser.cpp -o ArgumentParser.o
 	
 RingBufferConsumer.o: RingBufferConsumer.cpp RingBufferConsumer.h DataRecorderExceptions.h
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferConsumer.cpp -o RingBufferConsumer.o
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferConsumer.cpp -o RingBufferConsumer.o
 
-RingBufferIndex.o: RingBufferIndex.h RingBufferIndex.cpp
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferIndex.cpp -o RingBufferIndex.o
+RingBufferPageIndex.o: RingBufferPageIndex.h RingBufferPageIndex.cpp
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferPageIndex.cpp -o RingBufferPageIndex.o
 
 runner: $(TEST_OBJS)
-	$(C++) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner
 
 runner.o: runner.cpp
-	$(C++) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c runner.cpp -o runner.o
+	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c runner.cpp -o runner.o
 
 runner.cpp: $(TEST_HEADERS)
 	$(CXXTESTGEN) $(CXXTESTGEN_GEN_FLAGS) runner.cpp $(TEST_HEADERS)
@@ -65,7 +65,15 @@ doc:
 
 test: runner
 	- sudo $(MEMLEAK_CHECK) ./runner
-	sudo ./runner
+	sudo su -c ./runner
+
+coverage: test
+	#lcov --base-directory . --directory . --zerocounters -q
+	lcov --base-directory . --directory . -c -o coverage.info
+	lcov --remove coverage.info "/usr*" -o coverage.info # remove output for external libraries
+	rm -rf test_coverage
+	genhtml -o test_coverage -t "Xenomai User Space Tools Test Coverage" --num-spaces 4 coverage.info
+	
 	
 	
 # remove object files and core (if any)
@@ -74,6 +82,8 @@ clean:
 	$(RM) runner.cpp
 	$(RM) *.o core ._*
 	$(RM) -fr latex html
+	$(RM) *.gcov *.gcda *.gcno
+	$(RM) -rf test_coverage test_coverage.info coverage.info
 
 # remove object files, core dump, and executable (if any)
 distclean:

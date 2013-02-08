@@ -10,22 +10,27 @@
 #include "DataRecorderExceptions.h"
 #include "RingBufferConsumer.h"
 
-class RingBufferIndex
+class RingBufferPageIndex
 {
 	RingBufferConsumer &ringBufferConsumer;
 	unsigned long long index;
 	unsigned long long page;
 	unsigned long long page_width;
+	unsigned long long count_pages;
 public:
 	static const long long int DEFAULT_PAGE_WIDTH = 100;
-	RingBufferIndex(RingBufferConsumer &ringBufferConsumer,
-			unsigned long long page = 0,
+
+	RingBufferPageIndex(RingBufferConsumer &ringBufferConsumer);
+
+	void setPage(unsigned long long page = 0,
 			unsigned long long page_width = DEFAULT_PAGE_WIDTH);
+
 	unsigned long long getPageWidth();
 	unsigned long long getPage();
 	unsigned long long getIndex();
+	unsigned long long getCountPages();
 	bool incrementIndex();
-	virtual ~RingBufferIndex();
+	virtual ~RingBufferPageIndex();
 };
 
 #endif /* RINGBUFFERINDEX_H_ */

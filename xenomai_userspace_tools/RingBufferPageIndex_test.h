@@ -3,9 +3,9 @@
 
 #include <cxxtest/TestSuite.h>
 
-#include "RingBufferIndex.h"
+#include "RingBufferPageIndex.h"
 
-class RingBufferIndex_test : public CxxTest::TestSuite
+class RingBufferPageIndex_test : public CxxTest::TestSuite
 {
 public:
 	void setUp()
@@ -22,18 +22,19 @@ public:
 	{
 		RingBufferConsumer rb;
 		rb.init();
-		RingBufferIndex rbi(rb);
+		RingBufferPageIndex rbi(rb);
 
 		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
 		TS_ASSERT_EQUALS(rbi.getPage(), 0);
-		TS_ASSERT_EQUALS(rbi.getPageWidth(), RingBufferIndex::DEFAULT_PAGE_WIDTH);
+		TS_ASSERT_EQUALS(rbi.getPageWidth(), RingBufferPageIndex::DEFAULT_PAGE_WIDTH);
 	}
 
 	void testGetPageWidth()
 	{
 		RingBufferConsumer rb;
 		rb.init();
-		RingBufferIndex rbi(rb, 0, 666);
+		RingBufferPageIndex rbi(rb);
+		rbi.setPage(0, 666);
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), 666);
 	}
 
@@ -41,7 +42,8 @@ public:
 	{
 		RingBufferConsumer rb;
 		rb.init();
-		RingBufferIndex rbi(rb, 777, 1);
+		RingBufferPageIndex rbi(rb);
+		rbi.setPage(777, 1);
 		TS_ASSERT_EQUALS(rbi.getPage(), 777);
 	}
 
@@ -49,8 +51,17 @@ public:
 	{
 		RingBufferConsumer rb;
 		rb.init();
-		RingBufferIndex rbi(rb, 1, rb.getSize()/10);
-		//TS_ASSERT_EQUALS(rbi.getIndex(), 777);
+		unsigned long long int originalSize = rb.getSize();
+		TS_ASSERT(rb.setSize(1000));
+		RingBufferPageIndex rbi(rb);
+		rbi.setPage(0, 100);
+		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
+
+		rbi.setPage(5, 100);
+
+		TS_ASSERT_EQUALS(rbi.getIndex(), 500);
+
+		TS_ASSERT(rb.setSize(originalSize));
 
 	}
 

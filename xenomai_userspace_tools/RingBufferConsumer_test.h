@@ -26,6 +26,8 @@ public:
 		TS_ASSERT_THROWS(rbuf.getSensorValue(0), SharedMemoryNotInitialized);
 		TS_ASSERT_THROWS(rbuf.getSensorID(0), SharedMemoryNotInitialized);
 		TS_ASSERT_THROWS(rbuf.getSampleTimeCode(0), SharedMemoryNotInitialized);
+		TS_ASSERT_THROWS(rbuf.setSize(rbuf.getSize()-1), SharedMemoryNotInitialized);
+
 		TS_ASSERT(rbuf.init());
 		unsigned long long size = rbuf.getSize();
 		TS_ASSERT_THROWS(rbuf.getSensorValue(size), IndexOutOfRangeException);

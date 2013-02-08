@@ -19,6 +19,14 @@ class IndexOutOfRangeException : public exception
   }
 };
 
+class RingBufferPageOutOfRange : public exception
+{
+	virtual const char* what() const throw()
+	{
+	   return "RingBuffer Page out of Range";
+	}
+};
+
 class SharedMemoryNotInitialized : public exception
 {
 	virtual const char* what() const throw()
