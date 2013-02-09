@@ -2,7 +2,7 @@
 
 include Makefile.conf
 
-DIRS = xenomai_cokernelmodule_datarecorder xenomai_userspace_tools
+DIRS = xenomai_cokernelmodule_datarecorder xenomai_userspace_tools django_datarecorder/xenomai_interface
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
 CLEANDIRS = $(DIRS:%=clean-%)

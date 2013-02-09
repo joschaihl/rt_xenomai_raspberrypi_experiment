@@ -21,6 +21,7 @@ Dependencies for building from the Source:
 - Xenomai for Hard-Realtime
 - GNU C Compiler, GNU C++ Compiler for building the Kernel-Module and User-Space Tools
 - Python and Django Web-Framework for the Web based User-Interface
+- SWIG for Interfacing C++ Code in Python
 - CxxTest, gcov and  for agile Development and Testing
 - Doxygen and Latex for the Source-Documentation
 - AVR GNU C Compiler for the ATtiny45 based Test-Signalgenerator

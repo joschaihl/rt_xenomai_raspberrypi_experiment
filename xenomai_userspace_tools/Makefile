@@ -1,4 +1,6 @@
 include ../Makefile.conf
+DEBUG_DIR	= debug
+RELEASE_DIR = release
 U_TOOLS = read_shm_json
 TEST_RUNNER = runner
 MODULES = ArgumentParser RingBufferConsumer RingBufferPageIndex RingBufferLastDataIndex
@@ -8,6 +10,7 @@ U_MODULES = $(TEST_MODULES) $(TEST_RUNNER)
 OBJS     	 := ${patsubst %, %.o, $(U_MODULES)}
 TEST_OBJS	 := ${patsubst %, %.o, $(U_MODULES)}
 TEST_HEADERS := ${patsubst %, %_test.h, $(TEST_MODULES)}
+
 
 TARGET       = runner $(U_TOOLS)
 #read_shm_raw read_shm_json read_shm_html shm_properties        # name of executable
