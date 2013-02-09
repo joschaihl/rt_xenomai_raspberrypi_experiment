@@ -1,4 +1,4 @@
-%module ringbufferconsumer
+%module RingBufferConsumer
 %{
  #include "RingBufferConsumer.h"
 %}
