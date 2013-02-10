@@ -18,7 +18,7 @@ RingBufferPageIndex::RingBufferPageIndex(RingBufferConsumer &ringBufferConsumer)
 		index(0), ringBufferConsumer(ringBufferConsumer), count_pages(0), page(
 				0), page_width(DEFAULT_PAGE_WIDTH), max_index(0)
 {
-
+	setPage(0, DEFAULT_PAGE_WIDTH);
 }
 
 /**

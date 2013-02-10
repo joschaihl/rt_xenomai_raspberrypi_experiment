@@ -45,6 +45,8 @@ public:
 		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
 		TS_ASSERT_EQUALS(rbi.getPage(), 0);
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), RingBufferPageIndex::DEFAULT_PAGE_WIDTH);
+		TS_ASSERT(rbi.incrementIndex());
+		TS_ASSERT_EQUALS(rbi.getIndex(), 1);
 	}
 
 	void testGetPageWidth()

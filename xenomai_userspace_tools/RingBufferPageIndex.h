@@ -9,8 +9,9 @@
 #define RINGBUFFERINDEX_H_
 #include "DataRecorderExceptions.h"
 #include "RingBufferConsumer.h"
+#include "IIncrementableIndex.h"
 
-class RingBufferPageIndex
+class RingBufferPageIndex : public IIncrementableIndex
 {
 	RingBufferConsumer &ringBufferConsumer;
 	unsigned long long index;

@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include "RingBufferConsumer.h"
+//#include "rtdk.h"
 
 RingBufferConsumer::RingBufferConsumer() : sharedMemoryIsReady(false),
 recorder_shmem(NULL), recorder_ringBuffer(NULL)
@@ -122,7 +123,9 @@ RingBufferConsumer::~RingBufferConsumer()
        process unbinds all mappings automatically. */
 	if(sharedMemoryIsReady)
 	{
+		//rt_heap_free(&recorder_heap, &recorder_shmem);
 		rt_heap_unbind(&recorder_heap);
+		//rt_print_cleanup();
 	}
 }
 

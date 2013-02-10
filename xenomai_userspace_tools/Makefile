@@ -47,10 +47,10 @@ ArgumentParser.o: ArgumentParser.cpp ArgumentParser.h
 RingBufferConsumer.o: RingBufferConsumer.cpp RingBufferConsumer.h DataRecorderExceptions.h
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferConsumer.cpp -o RingBufferConsumer.o
 
-RingBufferPageIndex.o: RingBufferConsumer.h RingBufferPageIndex.h RingBufferPageIndex.cpp
+RingBufferPageIndex.o: IIncrementableIndex.h RingBufferConsumer.h RingBufferPageIndex.h RingBufferPageIndex.cpp
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferPageIndex.cpp -o RingBufferPageIndex.o
 
-RingBufferLastDataIndex.o: RingBufferConsumer.h RingBufferLastDataIndex.h RingBufferLastDataIndex.cpp
+RingBufferLastDataIndex.o: IIncrementableIndex.h RingBufferConsumer.h RingBufferLastDataIndex.h RingBufferLastDataIndex.cpp
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferLastDataIndex.cpp -o RingBufferLastDataIndex.o
 
 runner: $(TEST_OBJS)

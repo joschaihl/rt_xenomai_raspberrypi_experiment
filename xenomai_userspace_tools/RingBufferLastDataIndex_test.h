@@ -9,10 +9,10 @@
 class RingBufferLastDataIndex_test : public CxxTest::TestSuite
 {
 public:
-	RingBufferLastDataIndex rbl;
+	RingBufferConsumer rb;
 	void setUp()
 	{
-
+		rb.init();
 	}
 
 	void tearDown()
@@ -22,7 +22,7 @@ public:
 
 	void testRingBufferLastDataIndex()
 	{
-		RingBufferLastDataIndex rbl;
+		RingBufferLastDataIndex rbl(rb);
 		// Default Constructor:
 		// Last 100 Datasets
 		// until Index from RingBufferConsumer
