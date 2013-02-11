@@ -53,10 +53,10 @@ RingBufferPageIndex.o: IIncrementableIndex.h RingBufferConsumer.h RingBufferPage
 RingBufferLastDataIndex.o: IIncrementableIndex.h RingBufferConsumer.h RingBufferLastDataIndex.h RingBufferLastDataIndex.cpp
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c RingBufferLastDataIndex.cpp -o RingBufferLastDataIndex.o
 
-runner: $(TEST_OBJS)
+runner: $(TEST_OBJS) $(TEST_HEADERS)
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OBJS) $(LINKER-FLAGS) runner
 
-runner.o: runner.cpp
+runner.o: runner.cpp $(TEST_HEADERS)
 	$(C++) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) -c runner.cpp -o runner.o
 
 runner.cpp: $(TEST_HEADERS)
@@ -69,7 +69,7 @@ doc:
 	$(DOXYGEN)
 	make -C latex
 
-test: runner
+test: runner gcovclean
 	- sudo $(MEMLEAK_CHECK) ./runner
 	sudo su -c ./runner
 
@@ -83,11 +83,14 @@ coverage: test
 	
 	
 # remove object files and core (if any)
-clean:
+clean: gcovclean
 	$(RM) $(TARGET)
 	$(RM) runner.cpp
 	$(RM) *.o core ._*
 	$(RM) -fr latex html
+
+	
+gcovclean:
 	$(RM) *.gcov *.gcda *.gcno
 	$(RM) -rf test_coverage test_coverage.info coverage.info
 

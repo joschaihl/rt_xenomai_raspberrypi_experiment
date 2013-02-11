@@ -8,21 +8,26 @@
 class RingBufferPageIndex_test : public CxxTest::TestSuite
 {
 public:
+	RingBufferConsumer rb;
+	unsigned long long int originalsize;
+	RingBufferPageIndex_test() : originalsize(0)
+	{
+
+	}
 	void setUp()
 	{
-		// TODO: Implement setUp() function.
+		rb.init();
+		originalsize = rb.getSize();
 	}
 
 	void tearDown()
 	{
-		// TODO: Implement tearDown() function.
+		rb.setSize(originalsize);
 	}
+
 
 	void testCountPages()
 	{
-		RingBufferConsumer rb;
-		rb.init();
-		unsigned long long int originalSize = rb.getSize();
 		TS_ASSERT(rb.setSize(10));
 		RingBufferPageIndex rbi(rb);
 
@@ -31,17 +36,12 @@ public:
 
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(1,5));
 		TS_ASSERT_EQUALS(rbi.getCountPages(), 2);
-
-		// set the original size back
-		TS_ASSERT(rb.setSize(originalSize));
 	}
 
 	void testRingBufferIndex()
 	{
-		RingBufferConsumer rb;
-		rb.init();
 		RingBufferPageIndex rbi(rb);
-
+		TS_ASSERT(rb.setSize(1000));
 		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
 		TS_ASSERT_EQUALS(rbi.getPage(), 0);
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), RingBufferPageIndex::DEFAULT_PAGE_WIDTH);
@@ -51,27 +51,22 @@ public:
 
 	void testGetPageWidth()
 	{
-		RingBufferConsumer rb;
-		rb.init();
 		RingBufferPageIndex rbi(rb);
+		TS_ASSERT(rb.setSize(1000));
 		rbi.setPage(0, 666);
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), 666);
 	}
 
 	void testGetPage()
 	{
-		RingBufferConsumer rb;
-		rb.init();
 		RingBufferPageIndex rbi(rb);
+		TS_ASSERT(rb.setSize(1000));
 		rbi.setPage(777, 1);
 		TS_ASSERT_EQUALS(rbi.getPage(), 777);
 	}
 
 	void testIncrementIndex()
 	{
-		RingBufferConsumer rb;
-		rb.init();
-		unsigned long long int originalSize = rb.getSize();
 		TS_ASSERT(rb.setSize(10));
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0,3));
@@ -87,16 +82,10 @@ public:
 		TS_ASSERT(!rbi.incrementIndex());
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), 3);
 		TS_ASSERT_EQUALS(rbi.getPage(), 3);
-
-		// set the original size back
-		TS_ASSERT(rb.setSize(originalSize));
 	}
 
 	void testSetPage()
 	{
-		RingBufferConsumer rb;
-		rb.init();
-		unsigned long long int originalSize = rb.getSize();
 		TS_ASSERT(rb.setSize(1000));
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0, 100));
@@ -113,8 +102,6 @@ public:
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0, 1000));
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0, 10000));
 		TS_ASSERT_EQUALS(rbi.getPageWidth(), 1000);
-		// set the original size back
-		TS_ASSERT(rb.setSize(originalSize));
 	}
 };
 
