@@ -88,8 +88,8 @@ def main_page(request):
     systemtime = time.asctime(time.localtime())
     rbuf = RingBuffer()
     #rbufdata = '<h1>hallo welt</h1>'
-    rbufdata = rbuf.get_json()
-    
+    #rbufdata = rbuf.get_json()
+    rbufdata = rbuf.get_html_table()
     
   	#time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({

@@ -3,8 +3,8 @@
 # rc.local
 #
 #echo 1000 > /sys/module/xeno_nucleus/parameters/xenomai_gid
-/opt/www/django_datarecorder/manage.py runfcgi method=threaded host=127.0.0.1 port=3033
-
+#/opt/www/django_datarecorder/manage.py runfcgi method=threaded host=127.0.0.1 port=3033
+/etc/init.d/datarecorder_web_interface start
 
 # Get sure that sudoers has 0 as uid 
 chown root:root /etc/sudoers
