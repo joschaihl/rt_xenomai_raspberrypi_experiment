@@ -9,6 +9,7 @@
 #define RINGBUFFERCONSUMER_H_
 
 #include "DataRecorderExceptions.h"
+#include "IDataContainer.h"
 #include "ringbuffer_model.h"
 
 /* Shared Memory */

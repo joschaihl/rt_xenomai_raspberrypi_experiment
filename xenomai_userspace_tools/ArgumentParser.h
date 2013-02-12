@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * ReaderState
+ */
 enum ReaderState {
 		READER_STATE_UNDEFINED = 0,
 	    READ_LAST_WRITTEN_DATA = 1,

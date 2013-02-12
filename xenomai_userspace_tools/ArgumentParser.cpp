@@ -45,7 +45,7 @@ bool ArgumentParser::parse(int argc, char **argv)
 	/* Remember the name of the program, to incorporate in messages.
 	 The name is stored in argv[0].  */
 	this->readerState = READER_STATE_UNDEFINED;
-	this->maxlength = 0;
+	this->maxlength = 100ULL;
 	this->page_index = 0;
 	opterr = 0;
 	if(argc >= 1)
