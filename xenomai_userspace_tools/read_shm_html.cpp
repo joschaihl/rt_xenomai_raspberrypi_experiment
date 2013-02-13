@@ -9,7 +9,8 @@
 
 void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
-	puts("<table border=1>");
+	puts("<table class=\"ringbufferdata\">");
+	puts("<tr><td>Index</td><td>Sensor ID</td><td>Time Code (Jiffies)</td><td>Value</td></tr>");
 	do
     {
     	puts("<tr>");

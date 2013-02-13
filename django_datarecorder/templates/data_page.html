@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block external %}
+{% endblock %}
+{% block title %}Recorded Data{% endblock %}
+{% block head %}Navigate to recorded data in the ringbuffer{%endblock%}
+{% block content %}
+    <p style="text-align: center;">Page {{page_number}} of {{count_pages}} in Ringbuffer</p>
+    
+    <div class="centered">
+    {{rbufdata|safe}}
+    </div>
+ 
+    <p style="text-align: center;">Page in Ringbuffer&nbsp;&nbsp;&nbsp; 
+                 1 
+      <a href="">2</a>
+      <a href="">3</a> 
+      <a href="">4</a> 
+      <a href="">5</a>
+      <a href="">6</a>
+      <a href="">7</a>
+      <a href="">8</a>
+      <a href="">9</a>
+      <a href="">10</a>&nbsp;&nbsp;&nbsp; 
+      <a href="">Next</a></p>
+	
+{% endblock%}
+

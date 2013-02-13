@@ -9,8 +9,21 @@
 input {
 	display: block;
 }
+
 ul.tags, ul.tags li {
 	display: inline;
 	margin: 0;
 	padding: 0;
+}
+
+table.ringbufferdata {
+}
+
+div.centered {
+	text-align: center;
+}
+
+div.centered table {
+	margin: 0 auto; 
+	text-align: left;
 }

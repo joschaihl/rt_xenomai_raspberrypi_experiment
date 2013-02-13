@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     # Session Management
     (r'^login/$', 'django.contrib.auth.views.login'),
     (r'^shutdown/$', shutdown_page),
+    
     (r'^logout/$', logout_page),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', 
         { 'document_root': site_media }),
@@ -29,6 +30,12 @@ urlpatterns = patterns('',
         {'template': 'registration/register_success.html'}),
     (r'^user/(\w+)/$', user_page),
                        
+    # Ringbuffer Data Navigation
+    # Last written Data
+    #(r'^lastdata/datasets=(?P<num>\d+)/', lastdata_page),        
+    (r'^recorded_data/(?P<page_number>\d+)/$', datanav_page),        
+    (r'^recorded_data/(?P<page_number>\d+)/(?P<maxlength>\d+)/$', datanav_page),      
+
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

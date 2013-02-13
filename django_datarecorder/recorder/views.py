@@ -5,13 +5,14 @@ from django.template import Context, RequestContext
 from recorder.forms import RegistrationForm
 from django.shortcuts import get_object_or_404
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse,\
+    HttpResponseServerError, HttpResponseBadRequest
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from recorder.models import EnvironmentModel
 from django.core.context_processors import csrf
 from xenomai_interface.recordercontroller import RecorderController
-from xenomai_interface.ringbuffer import RingBuffer
+from xenomai_interface.read_shm import ReadRingBuffer
 
 import os, time
 
@@ -86,20 +87,21 @@ def main_page(request):
     recordingIsActive = environmentModel.globalRecordingIsActive;
     
     systemtime = time.asctime(time.localtime())
-    rbuf = RingBuffer()
+    rbuf = ReadRingBuffer()
+    rbuf.setLastDataMode(20)
     #rbufdata = '<h1>hallo welt</h1>'
     #rbufdata = rbuf.get_json()
     rbufdata = rbuf.get_html_table()
     
   	#time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({
-    										 'systemtime': systemtime,
-    										 'rbufdata': rbufdata,
-                         'recordingIsActive': recordingIsActive,
-                         'user': request.user
+    	'systemtime': systemtime,
+    	'rbufdata': rbufdata,
+        'recordingIsActive': recordingIsActive,
+        'user': request.user
     });
     
-    variables.update(csrf(request));
+    variables.update(csrf(request))
     return render_to_response('main_page.html', variables)    
     #return render_to_response('main_page.html', RequestContext(request))
 #    global test
@@ -109,4 +111,37 @@ def main_page(request):
 #    })
 #    return render_to_response('main_page.html', variables)        
 
-test = 0
+from xenomai_interface.RingBufferConsumer import RingBufferConsumer
+from xenomai_interface.RingBufferPageIndex import RingBufferPageIndex 
+
+def datanav_page(request, page_number, maxlength = 100):
+    # types = "Page_number = %d" % long(page_number)
+    #return HttpResponse(types)
+    rbc = RingBufferConsumer()
+    result = HttpResponseServerError("Couldn't connect to Datarecorder")
+    if rbc.init():
+        p = long(page_number)
+        m = long(maxlength)
+        rbpi = RingBufferPageIndex(rbc)
+        # Fixme
+        try:
+            rbpi.setPage(p, m)
+        except:
+            return HttpResponseBadRequest("RingBuffer Page out of Range")
+        count_pages = rbpi.getCountPages()
+        rbuf = ReadRingBuffer()
+        rbuf.setPageMode(p, m)
+        rbufdata = rbuf.get_html_table()
+        variables = Context({
+            'rbufdata': rbufdata,
+            'page_number': page_number,
+            'maxlength': maxlength,
+            'count_pages': count_pages,
+            'user': request.user
+        });
+        variables.update(csrf(request));
+        result = render_to_response('data_page.html', variables)
+    
+    return result
+
+#
