@@ -11,17 +11,21 @@
     </div>
  
     <p style="text-align: center;">Page in Ringbuffer&nbsp;&nbsp;&nbsp; 
-                 1 
-      <a href="">2</a>
-      <a href="">3</a> 
-      <a href="">4</a> 
-      <a href="">5</a>
-      <a href="">6</a>
-      <a href="">7</a>
-      <a href="">8</a>
-      <a href="">9</a>
-      <a href="">10</a>&nbsp;&nbsp;&nbsp; 
-      <a href="">Next</a></p>
+    
+    {% for item in nextlinks %}
+    	{% if item.islink %}
+    		<a href="{{item.link}}">{{item.name}}</a>
+    	{% else %}
+    		{{item.name}}
+    	{% endif %}
+    {% endfor %}
+    &nbsp;&nbsp;&nbsp; 
+    
+    {%if nextlink %}
+    	<a href="{{nextlink}}">Next</a></p>
+    {% endif %}
+                
+     
 	
 {% endblock%}
 

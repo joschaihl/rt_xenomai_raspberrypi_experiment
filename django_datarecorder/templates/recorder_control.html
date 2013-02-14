@@ -1,5 +1,5 @@
+<div id="left_screen">
 {%include "sensor_control.html" %}
-
 <h2>Recorder Control</h2>
 <form method="post" action=".">
 	{% csrf_token %} 
@@ -16,3 +16,4 @@
 
 System state: {% if recordingIsActive %} Recording {% else %} Pause  {% endif %} <br/>
 System time: {{systemtime}}<br/>
+</div>

@@ -8,7 +8,7 @@ class ReadRingBuffer(object):
 	# Check types to avoid execution of shell scripts via appending some bad strings
 	def setLastDataMode(self, max_length=100):
 		if (type(max_length) is int) or (type(max_length) is long):
-			if max_length>=0 :
+			if max_length>0 :
 				self.__parameterString1 = "-l "
 				self.__parameterString2 = "-m %d" % (max_length)
 	
@@ -30,6 +30,7 @@ class ReadRingBuffer(object):
 		return output
 	
 	def get_html_table(self):
+		print self.__parameterString1 + " " + self.__parameterString2
 		output = subprocess.check_output(["/sbin/read_shm_html", self.__parameterString1, self.__parameterString2])
 		return output
 	

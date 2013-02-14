@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block external %}
+{% endblock %}
+{% block title %}New Recorded Data{% endblock %}
+{% block head %}Latest {{max_length}} recorded data in the ringbuffer{%endblock%}
+{% block content %}
+    <div class="centered">
+    {{rbufdata|safe}}
+    </div>	
+{% endblock%}
+

@@ -33,6 +33,8 @@ urlpatterns = patterns('',
     # Ringbuffer Data Navigation
     # Last written Data
     #(r'^lastdata/datasets=(?P<num>\d+)/', lastdata_page),        
+    (r'^newest_data/(?P<maxlength>\d+)/$', newest_data_page),        
+    
     (r'^recorded_data/(?P<page_number>\d+)/$', datanav_page),        
     (r'^recorded_data/(?P<page_number>\d+)/(?P<maxlength>\d+)/$', datanav_page),      
 

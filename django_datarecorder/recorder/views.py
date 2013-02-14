@@ -59,6 +59,20 @@ def alert_example(request):
     dajax.alert('Hello from python!')
     return dajax.json()
 
+def newest_data_page(request, maxlength = 100):
+    rbuf = ReadRingBuffer()
+    rbuf.setLastDataMode(long(maxlength))
+    rbufdata = rbuf.get_html_table();
+    max_length_str = str(maxlength)
+    variables = Context({
+        'max_length': max_length_str,
+        'rbufdata': rbufdata,
+        'user': request.user
+    })
+    variables.update(csrf(request))
+
+    return render_to_response('new_data_page.html', variables)
+
 def main_page(request):
     if request.method == 'POST':    
         recorderController = RecorderController()
@@ -132,11 +146,38 @@ def datanav_page(request, page_number, maxlength = 100):
         rbuf = ReadRingBuffer()
         rbuf.setPageMode(p, m)
         rbufdata = rbuf.get_html_table()
+        
+        #first_next_page = 0
+        #if page_number>5:
+        #   first_next_page = page_number -5
+            
+        class page:
+            def __init__(self):
+                self.islink = False
+                self.name = ""
+                self.link = ""
+        
+        nextlinks = []
+        for nextpage in range(0, count_pages):
+            currentpage = page()
+            if nextpage == page_number:
+                currentpage.islink = False
+            else:
+                currentpage.islink = True
+                currentpage.link = "/recorded_data/" + str(nextpage) + "/" + str(maxlength) + "/" 
+            currentpage.name = str(nextpage)
+            nextlinks.append(currentpage)
+        
+        
+        #nextlink = "test"
+
         variables = Context({
             'rbufdata': rbufdata,
             'page_number': page_number,
             'maxlength': maxlength,
             'count_pages': count_pages,
+        #  'nextlink': nextlink,
+            'nextlinks': nextlinks,
             'user': request.user
         });
         variables.update(csrf(request));

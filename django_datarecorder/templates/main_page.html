@@ -4,8 +4,10 @@
 {% block content %}
 	{% if user.username %}
 		<p>Welcome {{user.username }}</p>
+		<div id="content">
 		{% include "recorder_control.html" %}
 		{% include "sensor_data.html" %}
+		</div>
 	{% else %}
 		<p>Welcome anonymous user:
 		You need to <a href="/login">login</a> before you can use the data recorder.</p> 

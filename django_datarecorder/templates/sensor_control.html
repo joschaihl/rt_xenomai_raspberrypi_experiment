@@ -2,22 +2,27 @@
 <form method="post" action=".">
 	{% csrf_token %} 
 	<fieldset>
-		<legend>Sensor Control</legend>
-		<p><label for="SamplingRate"> Sampling Rate * </label><input id="SamplingRate" type="number" name="SamplingRate" value="1" />
+		<legend>Sensor Control Panel</legend>
+		<p><label for="SamplingRate">Sampling of Sensor-Data  every * </label><input id="SamplingRate" type="number" name="SamplingRate" value="1" />
 		<select name="samplingUnit" size="1">
-	      <option>Hz</option>
-	      <option>kHz</option>
+	      <option>nS</option>
+	      <option>uS</option>
+	      <option>mS</option>
+	      <option>S</option>
 	    </select></p>
-		<p>Size of Ring Buffer **<input type="number" name="RingBufferSize" value="64" /> 
+	    <p>Ringbuffer Overflow every N</p>
+	    
+		<p>Size of Ring Buffer **<input type="number" name="RingBufferSize" value="10000000" /> 
 		<select name="ringBufferSizeUnit" size="1">
-	      <option>KB (1024 Byte)</option>
-	      <option>MB (1024 KB)</option>
+	      <option>Samples</option>
+	      <option>Kilosamples (1000 Samples)</option>
+	      <option>Megasamples (1000 Kilosamples)</option>
 	    </select></p>
 		<input type="hidden" name="next" value="/" />
-		<input type="submit" value="Save Settings" />
-		* The frequency depends on your hardware
+		<input type="submit" value="Save and Apply" />
+		* The maximum possible frequency depends on your hardware
 		<br/>
-		** The size of the RingBuffer depends on the possible allocated memory 
-		<br/>
+		** The size of the RingBuffer depends on the allocated memory 
+
 	</fieldset>
 </form>

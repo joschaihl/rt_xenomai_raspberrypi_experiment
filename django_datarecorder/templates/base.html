@@ -13,7 +13,8 @@
 		<a href="/">home</a> |
 		{% if user.is_authenticated %}
 			<a href="/user/{{user.username}}/">{{user.username}}</a> |
-			<a href="/recorded_data/0/">recorded data</a> |
+			<a href="/newest_data/1000/">newest data</a> |
+			<a href="/recorded_data/0/1000">all recorded data</a> |
 			<a href="/logout">logout</a>
 			<a href="/shutdown">shutdown</a>
 		{% else %}
