@@ -17,6 +17,7 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
 	unsigned char color = 0;
 	vector<int> compression_params;
+	vector<unsigned char> output;
 	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
 	compression_params.push_back(9);
 	compression_params.push_back(0);
@@ -33,17 +34,10 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 			if(indexer.incrementIndex()==false)
 				break;
 		}
+	imencode(".png", a, output, compression_params);
+	cout.write(reinterpret_cast<const char*>(output.data()), output.size());
 
-
-/*	do
-    {
-    	printf("%llu %u %llu %u\n",indexer.getIndex(),
-    			rbuf.getSensorID(indexer.getIndex()),
-    			rbuf.getSampleTimeCode(indexer.getIndex()),
-    			rbuf.getSensorValue(indexer.getIndex()));
-    } while(indexer.incrementIndex());*/
-
-	imwrite("test3.png", a, compression_params);
+	//imwrite("test3.png", a, compression_params);
 }
 
 int main(int argc, char **argv)

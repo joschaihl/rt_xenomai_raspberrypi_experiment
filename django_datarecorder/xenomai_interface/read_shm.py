@@ -37,6 +37,10 @@ class ReadRingBuffer(object):
 	def get_json(self):
 		output = subprocess.check_output(["/sbin/read_shm_json", self.__parameterString1, self.__parameterString2])
 		return output
+	
+	def get_png(self):
+		output = subprocess.check_output(["/sbin/read_shm_png", self.__parameterString1, self.__parameterString2])
+		return output
 
 	# Crash with 9 MB Data - eval is also insecure and evil
 	#def get(self):

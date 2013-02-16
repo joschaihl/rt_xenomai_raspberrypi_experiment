@@ -34,9 +34,11 @@ urlpatterns = patterns('',
     # Last written Data
     #(r'^lastdata/datasets=(?P<num>\d+)/', lastdata_page),        
     (r'^newest_data/(?P<maxlength>\d+)/$', newest_data_page),        
+    (r'^newest_data_png/(?P<maxlength>\d+)/$', newest_data_png_page), 
     
     (r'^recorded_data/(?P<page_number>\d+)/$', datanav_page),        
-    (r'^recorded_data/(?P<page_number>\d+)/(?P<maxlength>\d+)/$', datanav_page),      
+    (r'^recorded_data/(?P<page_number>\d+)/(?P<maxlength>\d+)/$', datanav_page),     
+   
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

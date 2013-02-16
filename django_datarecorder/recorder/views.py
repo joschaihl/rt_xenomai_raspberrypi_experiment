@@ -73,6 +73,14 @@ def newest_data_page(request, maxlength = 100):
 
     return render_to_response('new_data_page.html', variables)
 
+def newest_data_png_page(request, maxlength = 100):
+    rbuf = ReadRingBuffer()
+    rbuf.setLastDataMode(long(maxlength))
+    rbufdata = rbuf.get_png()
+    response = HttpResponse(rbufdata, content_type='image/png')
+    #response['Content-Disposition'] = 'attachment; filename="ringbufferdata.png"'
+    return response
+    
 def main_page(request):
     if request.method == 'POST':    
         recorderController = RecorderController()
