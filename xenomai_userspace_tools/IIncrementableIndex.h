@@ -12,6 +12,7 @@ class IIncrementableIndex
 {
 public:
 	virtual unsigned long long getIndex() = 0;
+	virtual unsigned long long getPossibleIncrementations() = 0;
 	virtual bool incrementIndex() = 0;
 	virtual ~IIncrementableIndex() {};
 };

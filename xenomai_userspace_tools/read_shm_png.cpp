@@ -13,26 +13,48 @@
 using namespace cv;
 using namespace std;
 
+#define IMAGE_WIDTH 800
+#define HIGH_COLOR 255
+#define LOW_COLOR 0
+#define END_COLOR 127
+
 void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
 	unsigned char color = 0;
 	vector<int> compression_params;
 	vector<unsigned char> output;
+	// Highest PNG Compression
 	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
 	compression_params.push_back(9);
 	compression_params.push_back(0);
-	Mat a(800, 800, CV_8UC1);
+
+	int lines = (indexer.getPossibleIncrementations()+1) / IMAGE_WIDTH;
+	if((indexer.getPossibleIncrementations()+1) % IMAGE_WIDTH!=0)
+	{
+		lines++;
+	}
+
+	Mat a(lines, IMAGE_WIDTH, CV_8UC1);
 	int x, y;
-	for(y = 0; y < 800; y++)
+	bool end_data = false;
+	for(y = 0; y < lines; y++)
 		for(x = 0; x < 800; x++)
 		{
-			if(rbuf.getSensorValue(indexer.getIndex())==1)
-				color = 255;
+			if(!(indexer.getPossibleIncrementations()==0 && end_data))
+			{
+				if(indexer.getPossibleIncrementations()==0)
+					end_data = true;
+				if(rbuf.getSensorValue(indexer.getIndex())==1)
+					color = HIGH_COLOR;
+				else
+					color = LOW_COLOR;
+				indexer.incrementIndex();
+			}
 			else
-				color = 0;
+			{
+				color = END_COLOR;
+			}
 			a.at<unsigned char>(y,x) = color;
-			if(indexer.incrementIndex()==false)
-				break;
 		}
 	imencode(".png", a, output, compression_params);
 	cout.write(reinterpret_cast<const char*>(output.data()), output.size());

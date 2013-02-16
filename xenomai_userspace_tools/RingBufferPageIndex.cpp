@@ -120,6 +120,11 @@ bool RingBufferPageIndex::incrementIndex()
 	return result;
 }
 
+unsigned long long RingBufferPageIndex::getPossibleIncrementations()
+{
+	return this->max_index - this->index;
+}
+
 unsigned long long RingBufferPageIndex::getCountPages()
 {
 	return this->count_pages;

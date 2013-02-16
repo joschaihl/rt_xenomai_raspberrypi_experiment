@@ -31,7 +31,8 @@ public:
 	unsigned long long getPage();
 	unsigned long long getIndex();
 	unsigned long long getCountPages();
-	bool incrementIndex();
+	virtual bool incrementIndex();
+	virtual unsigned long long getPossibleIncrementations();
 	virtual ~RingBufferPageIndex();
 };
 

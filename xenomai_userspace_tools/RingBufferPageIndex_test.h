@@ -70,10 +70,13 @@ public:
 		TS_ASSERT(rb.setSize(10));
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0,3));
+		TS_ASSERT_EQUALS(rbi.getPossibleIncrementations(),2);
 		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
 		TS_ASSERT(rbi.incrementIndex());
+		TS_ASSERT_EQUALS(rbi.getPossibleIncrementations(),1);
 		TS_ASSERT_EQUALS(rbi.getIndex(), 1);
 		TS_ASSERT(rbi.incrementIndex());
+		TS_ASSERT_EQUALS(rbi.getPossibleIncrementations(),0);
 		TS_ASSERT_EQUALS(rbi.getIndex(), 2);
 		TS_ASSERT(!rbi.incrementIndex());
 		TS_ASSERT_EQUALS(rbi.getIndex(), 2);

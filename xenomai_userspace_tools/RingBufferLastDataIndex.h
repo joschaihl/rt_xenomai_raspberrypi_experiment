@@ -53,6 +53,8 @@ public:
 	 * @result True if the index can be incremented.
 	 */
 	virtual bool incrementIndex();
+
+	virtual unsigned long long getPossibleIncrementations();
 	virtual ~RingBufferLastDataIndex();
 };
 

@@ -62,6 +62,11 @@ bool RingBufferLastDataIndex::incrementIndex()
 	return result;
 }
 
+unsigned long long RingBufferLastDataIndex::getPossibleIncrementations()
+{
+	return datasets - incrementCounter -1;
+}
+
 
 RingBufferLastDataIndex::RingBufferLastDataIndex(RingBufferConsumer &ringBufferConsumer)
 : ringBufferConsumer(ringBufferConsumer), index(0), datasets(0), incrementCounter(0)
