@@ -1,7 +1,7 @@
 include ../Makefile.conf
 DEBUG_DIR	= debug
 RELEASE_DIR = release
-U_TOOLS = read_shm_json read_shm_html read_shm_raw
+U_TOOLS = read_shm_json read_shm_html read_shm_raw read_shm_png
 TEST_RUNNER = runner
 MODULES = ArgumentParser RingBufferConsumer RingBufferPageIndex RingBufferLastDataIndex
 TEST_MODULES = $(MODULES)
@@ -33,6 +33,12 @@ all: $(TARGET)
 
 #%.o: %.cpp
 #	$(C++) $(USPACE_CFLAGS) -c $< -o $@
+
+read_shm_png: ArgumentParser.o SensorDataPrinterTool.o RingBufferConsumer.o RingBufferPageIndex.o RingBufferLastDataIndex.o read_shm_png.o 
+	$(C++) $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OPENCV_LDFLAGS) ArgumentParser.o SensorDataPrinterTool.o RingBufferConsumer.o RingBufferPageIndex.o RingBufferLastDataIndex.o read_shm_png.o $(LINKER-FLAGS) $@
+	
+read_shm_png.o: read_shm_png.cpp SensorDataPrinterTool.h
+	$(C++) $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) $(OPENCV_CFLAGS) -c read_shm_png.cpp -o read_shm_png.o
 
 read_shm_raw: ArgumentParser.o SensorDataPrinterTool.o RingBufferConsumer.o RingBufferPageIndex.o RingBufferLastDataIndex.o read_shm_raw.o
 	$(C++) $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) ArgumentParser.o SensorDataPrinterTool.o RingBufferConsumer.o RingBufferPageIndex.o RingBufferLastDataIndex.o read_shm_raw.o $(LINKER-FLAGS) $@
