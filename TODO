@@ -15,6 +15,8 @@ Important:
 - Add SWIG Interfaces for exceptions etc.
 
 Maybe:
+- Auto-Update /proc/xenomai/stat via AJAX and JSON 
+	http://mitchfournier.com/2011/06/06/getting-started-with-ajax-in-django-a-simple-jquery-approach/
 - Make the datarecorder state serializable (also load the last state on startup)
 - Make the 'all recorded data' section faster with writing a C++ Module, because
 	Python loops are very slow.

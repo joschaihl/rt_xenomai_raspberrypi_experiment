@@ -8,12 +8,12 @@ install: all
 
 # RingBufferPageIndex
 _RingBufferPageIndex.so: RingBufferPageIndex.o RingBufferConsumer.o
-	$(C++) $(XENO_LDFLAGS) -shared   \
+	$(C++) $(OFLAGS) $(XENO_LDFLAGS) -shared   \
 	$< $(patsubst %.o, %_wrap.o, $<) RingBufferConsumer.o RingBufferConsumer_wrap.o -o $@
 	
 	
 RingBufferPageIndex.o: RingBufferPageIndex_wrap.cxx
-	$(C++) -I$(DATARECORDER_LIB_DIR) -I$(XENOMAI_USERSPACE_TOOLS_DIR) \
+	$(C++) $(OFLAGS) -I$(DATARECORDER_LIB_DIR) -I$(XENOMAI_USERSPACE_TOOLS_DIR) \
 	 $(PYTHON_INCLUDES) $(XENO_CFLAGS) \
 	 $(PACKED_CFLAGS) -c -fpic $< \
 	 $(XENOMAI_USERSPACE_TOOLS_DIR)/$(patsubst %.o,%.cpp,$@)
@@ -23,12 +23,12 @@ RingBufferPageIndex_wrap.cxx: $(XENOMAI_USERSPACE_TOOLS_DIR)/RingBufferPageIndex
 
 # RingBufferConsumer
 _RingBufferConsumer.so: RingBufferConsumer.o
-	$(C++) $(XENO_LDFLAGS) -shared   \
+	$(C++) $(OFLAGS) $(XENO_LDFLAGS) -shared   \
 	$< $(patsubst %.o, %_wrap.o, $<)    -o $@
 	
 	
 RingBufferConsumer.o: RingBufferConsumer_wrap.cxx
-	$(C++) -I$(DATARECORDER_LIB_DIR) -I$(XENOMAI_USERSPACE_TOOLS_DIR) \
+	$(C++) $(OFLAGS) -I$(DATARECORDER_LIB_DIR) -I$(XENOMAI_USERSPACE_TOOLS_DIR) \
 	 $(PYTHON_INCLUDES) $(XENO_CFLAGS) \
 	 $(PACKED_CFLAGS) -c -fpic $< \
 	 $(XENOMAI_USERSPACE_TOOLS_DIR)/$(patsubst %.o,%.cpp,$@)

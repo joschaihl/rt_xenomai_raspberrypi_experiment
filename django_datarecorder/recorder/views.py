@@ -129,9 +129,13 @@ def main_page(request):
     #rbufdata = rbuf.get_json()
     rbufdata = rbuf.get_html_table()
     
+    xen_proc_stat_in = open("/proc/xenomai/stat", "r")
+    systemstat = xen_proc_stat_in.read()
+    
   	#time.strftime("%d.%m.%Y um %H:%M:%S Uhr")
     variables = Context({
     	'systemtime': systemtime,
+        'systemstat': systemstat,
     	'rbufdata': rbufdata,
         'recordingIsActive': recordingIsActive,
         'ringBufferSize': ringBufferSize,

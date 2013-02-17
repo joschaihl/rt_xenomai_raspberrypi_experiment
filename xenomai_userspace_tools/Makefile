@@ -9,7 +9,7 @@ U_MODULES = $(TEST_MODULES) $(TEST_RUNNER)
 OBJS     	 := ${patsubst %, %.o, $(U_MODULES)}
 TEST_OBJS	 := ${patsubst %, %.o, $(U_MODULES)}
 TEST_HEADERS := ${patsubst %, %_test.h, $(TEST_MODULES)}
-
+#DEFAULT_FLAGS = $(DEBUG_FLAG) $(GCOV_FLAG)
 
 TARGET       = runner $(U_TOOLS)
 #read_shm_raw read_shm_json read_shm_html shm_properties        # name of executable
@@ -82,9 +82,10 @@ runner.o: runner.cpp $(TEST_HEADERS)
 runner.cpp: $(TEST_HEADERS)
 	$(CXXTESTGEN) $(CXXTESTGEN_GEN_FLAGS) runner.cpp $(TEST_HEADERS)
 	
-install:
-	$(INSTALL) $(U_TOOLS) /sbin
-
+install: clean
+	$(MAKE) all GCOV_FLAGS=$(OFLAGS) DEBUG_FLAG=-Wall
+	sudo $(INSTALL) $(U_TOOLS) /sbin
+        
 doc:
 	$(DOXYGEN)
 	make -C latex

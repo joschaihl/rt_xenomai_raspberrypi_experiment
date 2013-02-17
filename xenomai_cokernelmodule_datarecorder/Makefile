@@ -15,7 +15,7 @@ OBJS     := ${patsubst %, %.o, $(K_MODULES)}
 KOBJS		 := ${patsubst %, %.ko, $(K_MODULES)}
 CLEANMOD := ${patsubst %, .%*, $(K_MODULES)}
 
-EXTRA_CFLAGS := -I$(DATARECORDER_LIB) -I$(KSRC)/include/xenomai -I$(KSRC)/include/xenomai/posix $(ADD_CFLAGS) $(PACKED_CFLAGS)
+EXTRA_CFLAGS := $(OFLAGS) -I$(DATARECORDER_LIB) -I$(KSRC)/include/xenomai -I$(KSRC)/include/xenomai/posix $(ADD_CFLAGS) $(PACKED_CFLAGS)
 
 obj-m        := $(OBJS)
 
