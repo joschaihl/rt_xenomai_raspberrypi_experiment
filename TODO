@@ -1,12 +1,15 @@
 Now:
-- read_shm tools
-- shm_properties tool with parameters
-	-s (size in bytes) 		Set
-	-g										Get the current size  
-	
-- Makefile: Python Modules over SWIG				
-			
-Important:
-- Makefile with Debug and Release Target
-- Set Timer speed via /dev/rtp7
+- Show the current size of the ringbuffer and the speed in sensor control form
+- Mutex / Semaphore for ringbuffer access
 
+Important:
+- Measure the latency (worst-, best- and average case) and reset it after resetting 
+  the speed
+- Makefile with Debug and Release Target, to get faster access without profiling
+
+Maybe:
+- Make the datarecorder state serializable (also load the last state on startup)
+
+Maybe in the Future:
+- Record more than one GPIO-Pin (multiple sensors)
+- Save a whole recording session in a file
