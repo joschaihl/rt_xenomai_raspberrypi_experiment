@@ -3,23 +3,25 @@
 	{% csrf_token %} 
 	<fieldset>
 		<legend>Sensor Control Panel</legend>
-		<p><label for="SamplingRate">Sampling of Sensor-Data  every * </label><input id="SamplingRate" type="number" name="SamplingRate" value="1" />
-		<select name="samplingUnit" size="1">
+		<p><label for="samplingRate">Sampling of Sensor-Data  every * </label><input id="samplingRate" type="number" name="samplingRate" value="1" />
+		Nanoseconds
+		</p>
+		<!--  <select name="samplingUnit" size="1">
 	      <option>nS</option>
 	      <option>uS</option>
 	      <option>mS</option>
 	      <option>S</option>
-	    </select></p>
+	    </select></p>-->
 	    <p>Ringbuffer Overflow every N</p>
 	    
-		<p>Size of Ring Buffer **<input type="number" name="RingBufferSize" value="10000000" /> 
+		<p>Size of Ring Buffer **<input type="number" name="ringBufferSize" value="10000000" /> 
 		<select name="ringBufferSizeUnit" size="1">
 	      <option>Samples</option>
 	      <option>Kilosamples (1000 Samples)</option>
 	      <option>Megasamples (1000 Kilosamples)</option>
 	    </select></p>
 		<input type="hidden" name="next" value="/" />
-		<input type="submit" value="Save and Apply" />
+		<input type="submit" name="update_sensor_control" value="Save and Apply" />
 		* The maximum possible frequency depends on your hardware
 		<br/>
 		** The size of the RingBuffer depends on the allocated memory 

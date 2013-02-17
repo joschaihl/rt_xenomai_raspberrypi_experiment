@@ -6,6 +6,8 @@
 #include <linux/kernel.h>
 
 SystemState recorderState = rec_state_init;
+#define DEFAULT_SPEED 100 * 1000;
+int current_speed = DEFAULT_SPEED;
 
 void set_recorder_state(SystemState systemState)
 {
@@ -15,6 +17,16 @@ void set_recorder_state(SystemState systemState)
 SystemState get_recorder_state(void)
 {
 	return recorderState;
+}
+
+void set_speed(int timer_overflow_in_nanoseconds)
+{
+	current_speed = timer_overflow_in_nanoseconds;
+}
+
+int get_speed(void)
+{
+	return current_speed;
 }
 
 static int recorder_state_init(void)
@@ -36,3 +48,5 @@ MODULE_AUTHOR("Joscha Ihl <joscha@grundfarm.de>");
 MODULE_DESCRIPTION("Recorder State Machine Linux Co-Kernel Module for Real Time Data Recorder");
 EXPORT_SYMBOL(set_recorder_state);
 EXPORT_SYMBOL(get_recorder_state);
+EXPORT_SYMBOL(get_speed);
+EXPORT_SYMBOL(set_speed);

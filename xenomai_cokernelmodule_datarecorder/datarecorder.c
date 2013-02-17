@@ -6,7 +6,7 @@
 /* 2013 by Joscha Ihl <joscha@grundfarm.de>                                   */
 /******************************************************************************/
 #include "print.h"
-#include "control_pipe.h"
+#include "datarecorder.h"
 #include "rec_state.h"
 #include "rec_ringbuffer.h"
 #include <linux/init.h>
@@ -29,7 +29,7 @@
 #include <rtdm/rtdm_driver.h>
 
 /* Datastructures for sample timer */
-int frequency = 100 * 1000;
+//int frequency = 100 * 1000;
 rtdm_task_t timer_task;
 rtdm_timer_t datarecorder_timer;
 
@@ -92,6 +92,37 @@ static void timer_proc(rtdm_timer_t *timer)
     previous = rtdm_clock_read_monotonic();
 }
 
+int start_timer(void)
+{
+	int err;
+    err = rtdm_timer_start(&datarecorder_timer, rtdm_clock_read_monotonic(),
+                     get_speed(), RTDM_TIMERMODE_REALTIME);
+    switch(err) {
+        case 0:
+            break;
+        default:
+            DPRINT("Can't start sample timer task");
+            return -1;
+    }
+    return 0;
+}
+
+void stop_timer(void)
+{
+    DPRINT("Stopping Sample Timer...");
+	rtdm_timer_stop(&datarecorder_timer);
+}
+
+void reset_timer_frequency(void)
+{
+	if(get_recorder_state()==rec_state_pause||
+			get_recorder_state()==rec_state_running)
+	{
+		stop_timer();
+		start_timer();
+	}
+}
+
 /**
  * Datarecorder Entry-Point
  */
@@ -109,15 +140,7 @@ static int datarecorder_init(void)
             DPRINT("Can't init sample timer task");
             return -1;
     }
-    err = rtdm_timer_start(&datarecorder_timer, rtdm_clock_read_monotonic(),
-                     frequency, RTDM_TIMERMODE_REALTIME);
-    switch(err) {
-        case 0:
-            break;
-        default:
-            DPRINT("Can't start sample timer task");
-            return -1;
-    }
+    start_timer();
     set_recorder_state(rec_state_running);
     DPRINT("Datarecorder initialized and running :)");
     return 0;
@@ -130,9 +153,8 @@ static void datarecorder_exit(void)
 {
     DPRINT("Exiting Datarecorder...");
     
-    DPRINT("Stopping Sample Timer...");
-		rtdm_timer_stop(&datarecorder_timer);
-		rtdm_timer_destroy(&datarecorder_timer);
+    stop_timer();
+	rtdm_timer_destroy(&datarecorder_timer);
 
     DPRINT("Datarecorder Kernel Module removed");
 }
@@ -143,3 +165,5 @@ module_exit(datarecorder_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Joscha Ihl <joscha@grundfarm.de>");
 MODULE_DESCRIPTION("Real Time Data Recorder Linux Co-Kernel Module");
+
+EXPORT_SYMBOL(reset_timer_frequency);

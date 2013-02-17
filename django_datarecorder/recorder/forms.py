@@ -35,6 +35,7 @@ class RecorderControlForm(forms.Form):
 	recordingIsEnabled = forms.ChoiceField(label='Recording is enabled')
 
 class SensorControlForm(forms.Form):
-	samplingRate = forms.FloatField(label='SamplingRate');
+	samplingRate = forms.IntegerField(label='SamplingRate');
 	ringBufferSize = forms.IntegerField(label='RingBufferSize');
+	#samplingUnit = forms.Select()
 

@@ -4,11 +4,18 @@
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
 #include "rec_state.h"
+#include "datarecorder.h"
 #include "print.h"
 
 void parse_recorder_control_cmd(char *control_string,
 		unsigned int string_length)
 {
+	/**
+	 * If the grammar will be more complex, it would be better
+	 * to implement an LL(k), LR Parser or something like this.
+	 * At the moment the grammar is very simple, so that we
+	 * don't need this.
+	 */
 #ifdef DEBUG_DATARECORDER
 	unsigned int i;
 	for(i=0; i< string_length;i++)
@@ -25,6 +32,31 @@ void parse_recorder_control_cmd(char *control_string,
 	{
 		DPRINT("PAUSE");
 		set_recorder_state(rec_state_pause);
+	}
+	else if (string_length >= 8)
+	{
+		if(strncmp("speed=", control_string, 6)==0)
+		{
+			int err;
+
+			/* terminate string with 0 instead of newline */
+			control_string[string_length-1] = '\0';
+			//sscanf(control_string, "speed=%d", &speed);
+			char *int_str = control_string+6;
+			int value = 0;
+			err = kstrtoint(int_str, 10, &value);
+			if(err || value<=0)
+			{
+				DPRINT("Can't read speed value");
+			}
+			else
+			{
+				DPRINT("Set new speed value");
+				set_speed(value);
+				reset_timer_frequency();
+				rtdm_printk(KERN_INFO DPRINT_PREFIX "SPEED=%d\n", get_speed());
+			}
+		}
 	}
 }
 

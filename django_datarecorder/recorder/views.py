@@ -100,7 +100,19 @@ def main_page(request):
             #    print "Valid"
             environmentModel = EnvironmentModel.objects.create(globalRecordingIsActive=recordingRequest, realTimeViolationCounter=0)
             environmentModel.save();
-        sensorControlForm = SensorControlForm(request.POST)
+        
+        if 'update_sensor_control' in request.POST:
+            sensorControlForm = SensorControlForm(request.POST)
+            if sensorControlForm.is_valid():
+                samplingRate = sensorControlForm.cleaned_data['samplingRate']
+                recorderController.speed(samplingRate)
+                ringBufferSize = sensorControlForm.cleaned_data['ringBufferSize']
+                rb = RingBufferConsumer()
+                rb.init()
+                rb.setSize(ringBufferSize)
+                # TODO Wee need a Mutex here
+                #rb.
+            
     else: 
         recControlForm = RecorderControlForm()
         sensorControlForm = SensorControlForm()

@@ -17,7 +17,6 @@ class RecorderController(object):
 			Constructor
 			'''
 			
-			
 	def __open(self):
 		self.recorder_control_pipe = os.open(self.RECORDER_CONTROL_PIPE_NAME, os.O_WRONLY)
 		
@@ -33,4 +32,11 @@ class RecorderController(object):
 		self.__open()
 		os.write(self.recorder_control_pipe, "start")
 		self.__close()
+	
+	def speed(self, speed):
+		self.__open()
+		speedstr = "speed=%d" % (speed)
+		os.write(self.recorder_control_pipe, speedstr)
+		self.__close()	
+		
 		
