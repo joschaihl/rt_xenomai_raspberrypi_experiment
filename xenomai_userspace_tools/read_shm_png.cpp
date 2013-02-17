@@ -38,7 +38,7 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 	int x, y;
 	bool end_data = false;
 	for(y = 0; y < lines; y++)
-		for(x = 0; x < 800; x++)
+		for(x = 0; x < IMAGE_WIDTH; x++)
 		{
 			if(!(indexer.getPossibleIncrementations()==0 && end_data))
 			{

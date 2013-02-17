@@ -5,13 +5,13 @@
                                 | |(_|| (_|  |~\(/_(_|| | || | |(/_
                                    
                                                                                                  
- ____              __                                                     __                   
-/\  _`\           /\ \__                                                 /\ \                  
-\ \ \/\ \     __  \ \ ,_\     __     _ __    __     ___     ___    _ __  \_\ \      __   _ __  
- \ \ \ \ \  /'__`\ \ \ \/   /'__`\  /\`'__\/'__`\  /'___\  / __`\ /\`'__\/'_` \   /'__`\/\`'__\
-  \ \ \_\ \/\ \L\.\_\ \ \_ /\ \L\.\_\ \ \//\  __/ /\ \__/ /\ \L\ \\ \ \//\ \L\ \ /\  __/\ \ \/ 
-   \ \____/\ \__/.\_\\ \__\\ \__/.\_\\ \_\\ \____\\ \____\\ \____/ \ \_\\ \___,_\\ \____\\ \_\ 
-    \/___/  \/__/\/_/ \/__/ \/__/\/_/ \/_/ \/____/ \/____/ \/___/   \/_/ \/__,_ / \/____/ \/_/ 
+ ____       _      __    _     _     _     _     _     _     _     _      __    _    _   _    _  _
+/\  _`\   _    _  /\ \__    _     _     _     _    _     _     _     _   /\ \       _     _     _
+\ \ \/\ \     __  \ \ ,_\     __     _ __    __     ___     ___    _ __  \_\ \      __   _ __     _  _
+ \ \ \ \ \  /'__`\ \ \ \/   /'__`\  /\`'__\/'__`\  /'___\  / __`\ /\`'__\/'_` \   /'__`\/\`'__\  _  _
+  \ \ \_\ \/\ \L\.\_\ \ \_ /\ \L\.\_\ \ \//\  __/ /\ \__/ /\ \L\ \\ \ \//\ \L\ \ /\  __/\ \ \/   -   - 
+   \ \____/\ \__/.\_\\ \__\\ \__/.\_\\ \_\\ \____\\ \____\\ \____/ \ \_\\ \___,_\\ \____\\ \_\  
+    \/___/  \/__/\/_/ \/__/ \/__/\/_/ \/_/ \/____/ \/____/ \/___/   \/_/ \/__,_ / \/____/ \/_/  -   -
                                                                                                
                                                                                               
                Recording Data in Hard Realtime with Linux and your Raspberry PI.
@@ -26,3 +26,10 @@ Dependencies for building from the Source:
 - CxxTest, gcov and  for agile Development and Testing
 - Doxygen and Latex for the Source-Documentation
 - AVR GNU C Compiler for the ATtiny45 based Test-Signalgenerator
+
+Sample Rate of the Timer in the Kernel:
+- 50 nS is the lowest possible timer rate on the raspberry PI (=20 MHz) but it samples
+	wrong data
+- 100 nS shows right data = 1/100*10^-9 = 10.000.000 Hz = 10 MHz - slows the user space down
+- 10000 nS slows the user space a little bit down = 100 kHz
+- 100000 nS doesn't slow down the user-space down = 10 kHz

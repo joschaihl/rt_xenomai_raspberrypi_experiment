@@ -1,7 +1,14 @@
 *.pyc
 *.o
+*.so
+*.gcov
+*.gcda
+*.gcno
 *.d
 *.prefs
+test_coverage
+test_coverage.info
+coverage.info
 *.DS_Store
 *.map
 .*

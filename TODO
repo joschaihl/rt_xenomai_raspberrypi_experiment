@@ -3,10 +3,7 @@ Now:
 - Mutex / Semaphore for ringbuffer access (with #VALID_DATA define or optional, because
 	it makes the ringbuffer access slower!
 
-
 Important:
-- Show the Data in the image from top down
-- Make the HTML document bottom space 5 pixels wider, because of the image
 - Make a warning if wrong formular data are entered (ringbuffersize to big, 
 	speed to low or zero etc.)
 - Measure the latency (worst-, best- and average case) and reset it after resetting 
@@ -15,19 +12,17 @@ Important:
 - Reviewing code and document more code via Doxygen
 - Updating, reviewing and documenting signal-generator
 - Make simple control script for the signal-generator
+- Add SWIG Interfaces for exceptions etc.
 
 Maybe:
 - Make the datarecorder state serializable (also load the last state on startup)
 - Make the 'all recorded data' section faster with writing a C++ Module, because
 	Python loops are very slow.
+- Calculate the Ringbuffer-Overflow in Seconds, Hours, Days
+- Make the Jiffies more human readable
 
 Maybe in the Future:
 - Record more than one GPIO-Pin (multiple sensors)
 - Save a whole recording session in a file
-
-Sample Rate:
-- 50 nS Timer is the lowest possible timer rate on the raspberry PI (=20 MHz) it shows
-	wrong data
-- 100 nS shows right data = 1/100*10^-9 = 10.000.000 Hz = 10 MHz - slows the user space down
-- 10000 nS slows the user space a little bit down = 100 kHz
-- 100000 nS doesn't slow down the user-space down = 10 kHz
+- Refresh also the HTML-Table
+- If it is possible with Xenomai: Let the webapplication not running in root

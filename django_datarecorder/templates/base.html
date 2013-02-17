@@ -5,7 +5,15 @@
 	<title>Realtime Data Recorder | {% block title %} {% endblock %} </title>
 	<link rel="stylesheet" href="/site_media/style.css" type="text/css" />
 	<script type="text/javascript" 
-	src="/site_media/jquery-1.8.2.js"></script>
+	src="/site_media/jquery-1.8.2.js">
+	</script>
+	<script type="text/javascript">
+	setInterval(function(){
+		d = new Date();
+		$("#dataimg").attr("src", "/newest_data_png/1000000?"+d.getTime());
+	}, 5000)
+
+	</script>
 	{% block external %}{%endblock%}
 </head>
 <body>
