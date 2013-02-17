@@ -78,10 +78,13 @@ def newest_data_png_page(request, maxlength = 100):
     rbuf.setLastDataMode(long(maxlength))
     rbufdata = rbuf.get_png()
     response = HttpResponse(rbufdata, content_type='image/png')
+    response['Cache-Control'] = 'no-cache'
     #response['Content-Disposition'] = 'attachment; filename="ringbufferdata.png"'
     return response
     
 def main_page(request):
+    rb = RingBufferConsumer()
+    rb.init()
     if request.method == 'POST':    
         recorderController = RecorderController()
         recordControl = False
@@ -107,8 +110,6 @@ def main_page(request):
                 samplingRate = sensorControlForm.cleaned_data['samplingRate']
                 recorderController.speed(samplingRate)
                 ringBufferSize = sensorControlForm.cleaned_data['ringBufferSize']
-                rb = RingBufferConsumer()
-                rb.init()
                 rb.setSize(ringBufferSize)
                 # TODO Wee need a Mutex here
                 #rb.
@@ -116,9 +117,10 @@ def main_page(request):
     else: 
         recControlForm = RecorderControlForm()
         sensorControlForm = SensorControlForm()
-        
+    
     environmentModel = EnvironmentModel.objects.latest("id");
     recordingIsActive = environmentModel.globalRecordingIsActive;
+    ringBufferSize = rb.getSize();
     
     systemtime = time.asctime(time.localtime())
     rbuf = ReadRingBuffer()
@@ -132,6 +134,7 @@ def main_page(request):
     	'systemtime': systemtime,
     	'rbufdata': rbufdata,
         'recordingIsActive': recordingIsActive,
+        'ringBufferSize': ringBufferSize,
         'user': request.user
     });
     

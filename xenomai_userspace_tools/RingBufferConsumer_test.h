@@ -46,12 +46,13 @@ public:
 
 		// Set the size to maximum value
 		TS_ASSERT(rbuf.setSize(MAX_RINGBUFFER_SAMPLES));
+		TS_ASSERT_EQUALS(rbuf.getSize(), MAX_RINGBUFFER_SAMPLES);
 
 		TS_ASSERT(!rbuf.setSize(MAX_RINGBUFFER_SAMPLES+1));
 
 		// Back to original value
 		TS_ASSERT(rbuf.setSize(originalsize));
-
+		//TS_ASSERT_EQUALS(rbuf.getSize(), originalsize);
 		// Check that
 		TS_ASSERT_EQUALS(rbuf.getSize(), originalsize);
 

@@ -25,17 +25,17 @@ class RecorderController(object):
 					
 	def pause_record(self):
 		self.__open()
-		os.write(self.recorder_control_pipe, "pause")
+		os.write(self.recorder_control_pipe, "pause\n")
 		self.__close()
 		
 	def start_record(self):
 		self.__open()
-		os.write(self.recorder_control_pipe, "start")
+		os.write(self.recorder_control_pipe, "start\n")
 		self.__close()
 	
 	def speed(self, speed):
 		self.__open()
-		speedstr = "speed=%d" % (speed)
+		speedstr = "speed=%d\n" % (speed)
 		os.write(self.recorder_control_pipe, speedstr)
 		self.__close()	
 		

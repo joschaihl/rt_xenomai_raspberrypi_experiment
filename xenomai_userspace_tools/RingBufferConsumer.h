@@ -31,7 +31,7 @@ private:
 public:
 	RingBufferConsumer();
 	bool init();
-	bool setSize(long long ringBufferSize);
+	bool setSize(unsigned long long ringBufferSize);
 	unsigned long long getSize()
 		throw(SharedMemoryNotInitialized);
 	unsigned long long getCurrentIndex()
