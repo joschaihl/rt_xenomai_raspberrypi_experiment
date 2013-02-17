@@ -6,6 +6,9 @@ Important:
 - Measure the latency (worst-, best- and average case) and reset it after resetting 
   the speed
 - Makefile with Debug and Release Target, to get faster access without profiling
+- Reviewing code and document more code via Doxygen
+- Updating, reviewing and documenting signal-generator
+- Make simple control script for the signal-generator
 
 Maybe:
 - Make the datarecorder state serializable (also load the last state on startup)
