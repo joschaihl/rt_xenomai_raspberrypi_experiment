@@ -1,0 +1,2 @@
+@ECHO OFF
+"C:\Program Files (x86)\Atmel\AVR Tools\AvrAssembler2\avrasm2.exe" -S "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\labels.tmp" -fI -W+ie -C V2 -o "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\t45_signalgenerator.hex" -d "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\t45_signalgenerator.obj" -e "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\t45_signalgenerator.eep" -m "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\t45_signalgenerator.map" "C:\Users\Joscha Ihl\Documents\t45_signalgenerator\t45_signalgenerator.asm"
