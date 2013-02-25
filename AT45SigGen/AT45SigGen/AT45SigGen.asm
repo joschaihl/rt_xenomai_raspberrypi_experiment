@@ -1,6 +1,10 @@
-; ******************************************************
-; BASIC .ASM template file for AVR
-; ******************************************************
+/*
+ * AT45SigGen.asm
+ *
+ *  Created: 24.02.2013 16:25:18
+ *   Author: Joscha Ihl
+ */ 
+
 
 .include "Tn45def.inc"
 
@@ -201,10 +205,13 @@ debounce_low:
 	inc maxwait ; increment because this must be terminate
 	SBIS PINB, P_PRG_IN1  ; increment temp if Pin is low
 		inc temp
-	wait_3_us
-	wait_3_us
-   	wait_3_us
-	wait_3_us
+	ldi delay_value_lsb, low(100)
+	ldi delay_value_msb, high(100)
+debunce_low_delay_1us:
+    subi   delay_value_lsb, low(1)   ; 1 cycle
+    sbci   delay_value_msb, high(1)  ; +1 cycle
+    brne debunce_low_delay_1us ; 2 cycles	
+
 
 	rjmp debounce_low_m1
 	debounce_low_m2: ret
@@ -224,14 +231,25 @@ debounce_high:
 	inc maxwait ; increment because this must be terminate
 	SBIC PINB, P_PRG_IN1  ; increment temp if Pin is high
 		inc temp
-	wait_3_us
-	wait_3_us
-    wait_3_us
-	wait_3_us
+	ldi delay_value_lsb, low(100)
+	ldi delay_value_msb, high(100)
+debounce_high_delay_1us:
+    subi   delay_value_lsb, low(1)   ; 1 cycle
+    sbci   delay_value_msb, high(1)  ; +1 cycle
+    brne debounce_high_delay_1us ; 2 cycles	
 
 	rjmp debounce_high_m1
 	debounce_high_m2: ret
 	
+; Verbessertes debounce low & high
+; Dauer: Im best Case 127 * 100 us = 12,7 ms
+; m1: Initialisiere temp mit 127
+; inkrementiere wenn pin high
+; dekrementiere wenn pin low
+; warte 100 us 
+; Verlassen falls temp = 0
+
+
 pushbutton_release:
 	rcall debounce_low
 	
