@@ -12,24 +12,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- * ReaderState
+/***
+ * Reader State
  */
 enum ReaderState {
-		READER_STATE_UNDEFINED = 0,
-	    READ_LAST_WRITTEN_DATA = 1,
-	    READ_SPECIFIC_PAGE = 2
+		READER_STATE_UNDEFINED = 0,   //!< READER_STATE_UNDEFINED
+	    READ_LAST_WRITTEN_DATA = 1,//!< READ_LAST_WRITTEN_DATA
+	    READ_SPECIFIC_PAGE = 2     //!< READ_SPECIFIC_PAGE
 };
 
+/**
+ *
+ */
 class ArgumentParser
 {
 public:
 	ArgumentParser();
+	/**
+	 *
+	 * @param stream
+	 */
 	void printHelp(FILE* stream);
+	/**
+	 *
+	 * @param argc
+	 * @param argv
+	 * @return
+	 */
 	bool parse(int argc, char **argv);
+	/**
+	 * @return
+	 */
 	unsigned long long getMaxLength();
+	/**
+	 * @return
+	 */
 	unsigned long long getPage();
+	/**
+	 *
+	 * @return
+	 */
 	ReaderState getReaderState();
+	/**
+	 *
+	 */
 	virtual ~ArgumentParser();
 private:
 	ReaderState readerState;
