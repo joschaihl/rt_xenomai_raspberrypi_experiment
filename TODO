@@ -28,3 +28,11 @@ Maybe in the Future:
 - Save a whole recording session in a file
 - Refresh also the HTML-Table
 - If it is possible with Xenomai: Let the webapplication not running in root
+
+- Toggle GPIO Pin as on sampling - um mit dem Oszilloskop zu überprüfen ob die Frequenz wirklich stimmt
+- Der Timer-Parameter von Xenomai ist anscheinend nicht wirklich in Nanosekunden: Bsp. wenn eingestellt ist, dass alle
+250 nS gesampelt werden soll, wird alle 1000 nS gesampelt - dies kann überprüft werden
+durch Toggeln der LED
+- Alle Kernel-Aufrufe beseitigen, auch indirekte xenomai Funktionen
+http://elinux.org/RPi_BCM2835_GPIOs und http://www.open.com.au/mikem/bcm2835/group__constants.html#ga485a5a69e864565b0cd18b33ae1f59f2
+beachten, statt der Kernel fun

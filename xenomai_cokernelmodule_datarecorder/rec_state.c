@@ -6,7 +6,7 @@
 #include <linux/kernel.h>
 
 SystemState recorderState = rec_state_init;
-#define DEFAULT_SPEED 100 * 1000;
+#define DEFAULT_SPEED 25 * 1000;
 int current_speed = DEFAULT_SPEED;
 
 void set_recorder_state(SystemState systemState)
