@@ -6,7 +6,11 @@
  */
 
 #include "SensorDataPrinterTool.h"
-
+/**
+ *
+ * @param rbuf
+ * @param indexer
+ */
 void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
 	bool isNotLastIndex = true;
@@ -25,7 +29,12 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 	} while(isNotLastIndex);
 	printf("]");
 }
-
+/**
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv)
 {
 	SensorDataPrinterTool sprinter(argc, argv);

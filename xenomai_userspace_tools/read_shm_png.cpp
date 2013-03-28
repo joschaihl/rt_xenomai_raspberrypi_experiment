@@ -17,7 +17,11 @@ using namespace std;
 #define HIGH_COLOR 255
 #define LOW_COLOR 0
 #define END_COLOR 127
-
+/**
+ *
+ * @param rbuf
+ * @param indexer
+ */
 void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
 	unsigned char color = 0;
@@ -61,7 +65,12 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 
 	//imwrite("test3.png", a, compression_params);
 }
-
+/**
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv)
 {
 	SensorDataPrinterTool sprinter(argc, argv);

@@ -57,9 +57,9 @@ void RingBufferPageIndex::setPage(unsigned long long page,
 		/**
 		 * If we have size/page_width = 10/5 = 5 than we
 		 * have to pages:
-		 * 0 1 2 3 4 | 5 6 7 8 9
+		 * 0 1 2 3 4 | 5 6 7 8 9
 		 * If we have 10/3 than we have 4 pages:
-		 * 0 1 2 | 3 4 5 | 6 7 8 | 9 10
+		 * 0 1 2 | 3 4 5 | 6 7 8 | 9 10
 		 */
 		if((ringBufferConsumer.getSize() % page_width)>0)
 			count_p++;

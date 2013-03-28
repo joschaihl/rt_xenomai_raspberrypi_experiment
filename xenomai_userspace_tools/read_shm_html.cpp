@@ -6,7 +6,11 @@
  */
 
 #include "SensorDataPrinterTool.h"
-
+/**
+ *
+ * @param rbuf
+ * @param indexer
+ */
 void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 {
 	puts("<table class=\"ringbufferdata\">");
@@ -23,6 +27,12 @@ void printer(RingBufferConsumer &rbuf, IIncrementableIndex &indexer)
 	puts("</table>");
 }
 
+/**
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv)
 {
 	SensorDataPrinterTool sprinter(argc, argv);
