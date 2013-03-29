@@ -9,6 +9,7 @@
 #include "datarecorder.h"
 #include "rec_state.h"
 #include "rec_ringbuffer.h"
+#include "configuration.h"
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
@@ -18,17 +19,6 @@
 #include <mach/gpio.h>
 
 #include <time.h>
-
-#define ENABLE_TIMESTAMP
-#define USE_RTDM_TIMER
-// #define AVOID_LINUX_SYSTEM_CALLS
-// #define USE_ATOMIC_EXECUTION
-#define USE_MUTEX
-#define USE_TASK_SWITCH_OUTPUT_PIN
-
-#define GPIO_PIN_1 17			 // GPIO_GEN6 on GPIO Header
-#define GPIO_PIN_SAMPLE_STATUS_LED 16   // ACT LED on RPI
-#define GPIO_PIN_TASK_SWITCH_OUT 24 // GPIO_GEN5 on GPIO Header
 
 /* Task Control */
 #include <native/task.h>
@@ -135,7 +125,6 @@ void sample_gpio(void)
  */
 static void timer_proc(rtdm_timer_t *timer)
 {
-	//RTDM_EXECUTE_ATOMICALLY(sample_gpio());
 	sample_gpio();
 }
 

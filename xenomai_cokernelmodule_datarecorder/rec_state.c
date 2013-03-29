@@ -1,12 +1,13 @@
 #include "rec_state.h"
 #include "print.h"
+#include "configuration.h"
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
 
 SystemState recorderState = rec_state_init;
-#define DEFAULT_SPEED 25 * 1000;
+
 int current_speed = DEFAULT_SPEED;
 
 void set_recorder_state(SystemState systemState)

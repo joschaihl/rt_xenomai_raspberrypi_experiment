@@ -1,24 +1,29 @@
-#include "xen_ringbuf_model.h"
+#include "xen_ringbuf_controller.h"
 #include "print.h"
 #include "rec_ringbuffer.h"
-
+#include "configuration.h"
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
 
+RBUF_MEMBERS;
+
 void insertSampleToRingBuffer(SensorData sample)
-{    
-    ringBuffer->sensorData[ringBuffer->index] = sample;
-    if(ringBuffer->index < (ringBuffer->size -1))
-    {
-    	ringBuffer->index++;
-    }
-    else
-    {
-    	ringBuffer->overflows++;
-    	ringBuffer->index = 0;
-    }
+{
+	/* Critical section */
+	CRITICAL_RINGBUFFER_ACCESS(
+		ringBuffer->sensorData[ringBuffer->index] = sample;
+		if(ringBuffer->index < (ringBuffer->size -1))
+		{
+			ringBuffer->index++;
+		}
+		else
+		{
+			ringBuffer->overflows++;
+			ringBuffer->index = 0;
+		}
+	);
 }
 
 static int rec_ringuffer_init(void)
@@ -73,11 +78,25 @@ static int rec_ringuffer_init(void)
     ringBuffer->size = MAX_RINGBUFFER_SAMPLES;
     ringBuffer->index = 0;
     ringBuffer->overflows = 0;
+
+    /* Creating mutex with priority inheritance */
+#ifdef USE_MUTEX
+    err = rt_mutex_create(&ringbuffer_mutex, SHM_MUTEX_NAME);
+    if(err)
+    {
+    	DPRINT("Can't create Mutex");
+    	return -1;
+    }
+#endif
     return 0;
 }
 
 static void rec_ringbuffer_exit(void)
 {
+#ifdef USE_MUTEX
+	DPRINT("Removing Shared Memory Mutex");
+	rt_mutex_delete(&ringbuffer_mutex);
+#endif
     DPRINT("Removing Shared Memory");
 	rt_heap_delete(&datarecorder_heap);
 }

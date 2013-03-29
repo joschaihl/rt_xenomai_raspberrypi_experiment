@@ -1,11 +1,13 @@
 #include "control_pipe.h"
+#include "rec_state.h"
+#include "datarecorder.h"
+#include "print.h"
+#include "configuration.h"
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/kernel.h>
-#include "rec_state.h"
-#include "datarecorder.h"
-#include "print.h"
+
 
 void parse_recorder_control_cmd(char *control_string,
 		unsigned int string_length)
@@ -102,8 +104,8 @@ static int control_pipe_init(void)
 	/* Connect the kernel-side of the message pipe to the
 	 special device file /dev/rtp7. */
 	int err;
-	DPRINT("Creating Real Time Recorder Control Pipe /dev/rtp7...");
-	err = rt_pipe_create(&pipe_desc, "RecorderControlPipe", 7, 0);
+	DPRINT("Creating Real Time Recorder Control Pipe " DEV_RTP_STR "...");
+	err = rt_pipe_create(&pipe_desc, "RecorderControlPipe", DEV_RTP_NR, 0);
 
 	switch (err)
 	{

@@ -7,10 +7,12 @@
 
 #include <stdlib.h>
 #include "RingBufferConsumer.h"
-//#include "rtdk.h"
+#include <rtdm/rtdm.h>
+#include "ringbuffer_model.h"
+#include "xen_ringbuf_controller.h"
 
 RingBufferConsumer::RingBufferConsumer() : sharedMemoryIsReady(false),
-recorder_shmem(NULL), recorder_ringBuffer(NULL)
+shmem(NULL), ringBuffer(NULL)
 {
 
 }
@@ -23,7 +25,7 @@ bool RingBufferConsumer::init()
        be available at once, since the caller is not a Xenomai-enabled
        thread. The heap should have been created with the H_SHARED
        mode set. */
-	err = rt_heap_bind(&recorder_heap,SHM_NAME,TM_NONBLOCK);
+	err = rt_heap_bind(&datarecorder_heap,SHM_NAME,TM_NONBLOCK);
 
 	if (err)
 	{
@@ -32,15 +34,23 @@ bool RingBufferConsumer::init()
 	/* Get the address of the shared memory segment. The "size" and
        "timeout" arguments are unused here. */
 
-	err = rt_heap_alloc(&recorder_heap,0,TM_NONBLOCK,&recorder_shmem);
+	err = rt_heap_alloc(&datarecorder_heap,0,TM_NONBLOCK,&shmem);
 
 	if (err)
 	{
 		return false;
 	}
 
-	recorder_ringBuffer = (RingBuffer *) recorder_shmem;
+	ringBuffer = (RingBuffer *) shmem;
 	sharedMemoryIsReady = true;
+
+#ifdef USE_MUTEX
+	/*
+	 * Bind to existing mutex and don't wait if it not exist
+	 */
+	err = rt_mutex_bind(&ringbuffer_mutex, SHM_MUTEX_NAME, TM_NONBLOCK);
+#endif
+
 	return true;
 }
 
@@ -48,14 +58,22 @@ void RingBufferConsumer::check(unsigned long long index)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 
 {
+	bool out_of_range = false;
 	if(sharedMemoryIsReady==false)
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	if(index >= this->recorder_ringBuffer->size)
+	/**
+	 * Critical section
+	 */
+
+	CRITICAL_RINGBUFFER_ACCESS(out_of_range = (index >= this->ringBuffer->size));
+
+	if(out_of_range)
 	{
 		throw IndexOutOfRangeException();
 	}
+
 }
 
 bool RingBufferConsumer::setSize(unsigned long long ringBufferSize)
@@ -68,7 +86,7 @@ bool RingBufferConsumer::setSize(unsigned long long ringBufferSize)
 
 	if(ringBufferSize <= MAX_RINGBUFFER_SAMPLES)
 	{
-		this->recorder_ringBuffer->size = ringBufferSize;
+		CRITICAL_RINGBUFFER_ACCESS(this->ringBuffer->size = ringBufferSize);
 		result = true;
 	}
 
@@ -78,32 +96,40 @@ bool RingBufferConsumer::setSize(unsigned long long ringBufferSize)
 unsigned long long RingBufferConsumer::getSize()
 throw(SharedMemoryNotInitialized)
 {
+	unsigned long long result;
 	if(sharedMemoryIsReady==false)
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	return recorder_ringBuffer->size;
+	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->size);
+	return result;
 }
 
 unsigned char RingBufferConsumer::getSensorID(unsigned long long index)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
+	unsigned char result;
 	check(index);
-	return recorder_ringBuffer->sensorData[index].sensorID;
+	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sensorID);
+	return result;
 }
 
 unsigned long long RingBufferConsumer::getSampleTimeCode(unsigned long long index)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
+	unsigned long long result;
 	check(index);
-	return recorder_ringBuffer->sensorData[index].sampleTimeCode;
+	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sampleTimeCode);
+	return result;
 }
 
 unsigned char RingBufferConsumer::getSensorValue(unsigned long long index)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
+	unsigned char result;
 	check(index);
-	return recorder_ringBuffer->sensorData[index].sensorValue;
+	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sensorValue);
+	return result;
 }
 
 unsigned long long RingBufferConsumer::getCurrentIndex()
@@ -113,7 +139,7 @@ unsigned long long RingBufferConsumer::getCurrentIndex()
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	return recorder_ringBuffer->index;
+	return ringBuffer->index;
 }
 
 RingBufferConsumer::~RingBufferConsumer()
@@ -123,9 +149,15 @@ RingBufferConsumer::~RingBufferConsumer()
        process unbinds all mappings automatically. */
 	if(sharedMemoryIsReady)
 	{
-		//rt_heap_free(&recorder_heap, &recorder_shmem);
-		rt_heap_unbind(&recorder_heap);
-		//rt_print_cleanup();
+
+#ifdef USE_MUTEX
+	/*
+	 * Bind to existing mutex and don't wait if it not exist
+	 */
+	rt_mutex_unbind(&ringbuffer_mutex);
+#endif
+
+		rt_heap_unbind(&datarecorder_heap);
 	}
 }
 

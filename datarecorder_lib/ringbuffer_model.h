@@ -1,18 +1,18 @@
 #ifndef __RINGBUFFER_MODEL_H_
 #define __RINGBUFFER_MODEL_H_
+#include "configuration.h"
 
 #define KB 1024
 #define MB (KB * KB)
 
 #define SHM_NAME "RecorderRingbufferHeap"
-//#define MAX_RINGBUFFER_SAMPLES 4000000
-#define MAX_RINGBUFFER_SAMPLES 5000000
+#define SHM_MUTEX_NAME "RingbufferMutex"
 #define SHM_SIZE sizeof(RingBuffer)
 
 typedef struct __attribute__((packed)){
-    unsigned char sensorID;
-    unsigned long long sampleTimeCode;
-    unsigned char sensorValue;
+	unsigned char sensorID;
+	unsigned long long sampleTimeCode;
+	unsigned char sensorValue;
 } SensorData;
 
 typedef struct {

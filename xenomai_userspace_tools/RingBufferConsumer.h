@@ -11,9 +11,11 @@
 #include "DataRecorderExceptions.h"
 #include "IDataContainer.h"
 #include "ringbuffer_model.h"
+#include "configuration.h"
 
 /* Shared Memory */
 #include <native/heap.h>
+#include <native/mutex.h>
 
 /**
  * Class for getting samples from the RealTime Datarecorder Ringbuffer
@@ -21,10 +23,12 @@
 class RingBufferConsumer
 {
 private:
-	RT_HEAP recorder_heap;
-	void *recorder_shmem;
-	RingBuffer *recorder_ringBuffer;
-
+	RT_HEAP datarecorder_heap;
+#ifdef USE_MUTEX
+	RT_MUTEX ringbuffer_mutex;
+#endif
+	void *shmem;
+	RingBuffer *ringBuffer;
 	bool sharedMemoryIsReady;
 	void check(unsigned long long index)
 		throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
