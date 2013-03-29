@@ -14,12 +14,12 @@
 
 class SensorDataPrinterTool
 {
-private:
+public:
 	int argc;
 	char **argv;
 	ArgumentParser aParser;
 	RingBufferConsumer rbuf;
-public:
+
 	SensorDataPrinterTool(int argc, char **argv);
 	int run(void (&printer) (RingBufferConsumer &rbuf, IIncrementableIndex &indexer));
 	virtual ~SensorDataPrinterTool();

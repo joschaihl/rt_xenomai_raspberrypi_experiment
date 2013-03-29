@@ -21,7 +21,10 @@
 
 #define ENABLE_TIMESTAMP
 #define USE_RTDM_TIMER
-#define USE_ATOMIC_EXECUTION
+// #define AVOID_LINUX_SYSTEM_CALLS
+// #define USE_ATOMIC_EXECUTION
+#define USE_MUTEX
+#define USE_TASK_SWITCH_OUTPUT_PIN
 
 #define GPIO_PIN_1 17			 // GPIO_GEN6 on GPIO Header
 #define GPIO_PIN_SAMPLE_STATUS_LED 16   // ACT LED on RPI
@@ -35,8 +38,16 @@
 
 /* Datastructures for sample timer */
 //int frequency = 100 * 1000;
-rtdm_task_t timer_task;
+
+#ifdef USE_RTDM_TIMER
 rtdm_timer_t datarecorder_timer;
+#else
+rtdm_task_t timer_task;
+#endif
+
+#ifdef AVOID_LINUX_SYSTEM_CALLS
+unsigned int *gplev0 = 0x7E200034;
+#endif
 
 uint64_t previous, now;
 int blink = 0;
@@ -63,10 +74,12 @@ void sample_gpio(void)
 	{
 		currentSample.sensorID = 0;
 		currentSample.sampleTimeCode = now;
-		// unsigned int *gplev0 = 0x7E200034;
-		//  if(*gplev0 & (1 << GPIO_PIN_1))
 
+#ifdef AVOID_LINUX_SYSTEM_CALLS
+		if(*gplev0 & (1 << GPIO_PIN_1))
+#else
 		if (gpio_get_value(GPIO_PIN_1))
+#endif
 		{
 			currentSample.sensorValue = 1;
 #ifdef DEBUG_DATARECORDER
@@ -87,8 +100,15 @@ void sample_gpio(void)
 #else
 		insertSampleToRingBuffer(currentSample);
 #endif
+
+#ifdef AVOID_LINUX_SYSTEM_CALLS
+
+#else
         gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
+	#ifdef USE_TASK_SWITCH_OUTPUT_PIN
         gpio_set_value(GPIO_PIN_TASK_SWITCH_OUT, blink);
+	#endif
+#endif
         if(blink==0)
         {
             blink = 1;
@@ -97,6 +117,7 @@ void sample_gpio(void)
         {
             blink = 0;
         }
+
     }
 #ifdef ENABLE_TIMESTAMP
     if(firstrun==0)
@@ -134,7 +155,7 @@ int start_timer(void)
 	err = rtdm_timer_start(&datarecorder_timer, rtdm_clock_read_monotonic(),
 	                     get_speed(), RTDM_TIMERMODE_REALTIME);
 #else
-	err = rtdm_task_init(&timer_task, "sample_timer_task",
+	err = rtdm_task_init(&timer_task, "SampleTimerTask",
 			sample_timer, NULL, RTDM_TASK_HIGHEST_PRIORITY, get_speed());
 #endif
 
@@ -177,7 +198,9 @@ static int datarecorder_init(void)
 	int err;
     DPRINT("Initializing Datarecorder...");
     // Lock memory : avoid memory swapping for this program
+#ifdef USE_TASK_SWITCH_OUTPUT_PIN
     gpio_direction_output(GPIO_PIN_TASK_SWITCH_OUT, 1);
+#endif
     DPRINT("Starting Real Time Recorder Sample Timer Task...");
 #ifdef USE_RTDM_TIMER
     err = rtdm_timer_init(&datarecorder_timer, timer_proc,
