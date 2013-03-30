@@ -10,7 +10,7 @@
 
 #include "DataRecorderExceptions.h"
 #include "IDataContainer.h"
-#include "ringbuffer_model.h"
+#include "xen_ringbuf_model.h"
 #include "configuration.h"
 
 /* Shared Memory */
@@ -23,13 +23,13 @@
 class RingBufferConsumer
 {
 private:
-	RT_HEAP datarecorder_heap;
-#ifdef USE_MUTEX
-	RT_MUTEX ringbuffer_mutex;
-#endif
-	void *shmem;
-	RingBuffer *ringBuffer;
+	RBUF_MEMBERS;
+	SensorData currentData;
+	unsigned long long currentIndex;
+	void copyData(unsigned long long index)
+		throw(IndexOutOfRangeException);
 	bool sharedMemoryIsReady;
+
 	void check(unsigned long long index)
 		throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
 public:

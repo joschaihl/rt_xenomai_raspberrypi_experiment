@@ -17,11 +17,14 @@ void insertSampleToRingBuffer(SensorData sample)
 		if(ringBuffer->index < (ringBuffer->size -1))
 		{
 			ringBuffer->index++;
+			// __sync_fetch_and_add( &ringBuffer->index, 1 );
 		}
 		else
 		{
 			ringBuffer->overflows++;
+			// __sync_fetch_and_add( &ringBuffer->overflows, 1 );
 			ringBuffer->index = 0;
+			//__sync_fetch_and_and(&ringBuffer->index, 0);
 		}
 	);
 }
@@ -29,6 +32,7 @@ void insertSampleToRingBuffer(SensorData sample)
 static int rec_ringuffer_init(void)
 {
     int err;
+    unsigned long long i;
     /* Create the heap in kernel space */
     rtdm_printk(KERN_INFO DPRINT_PREFIX
                 "Reserving %d Bytes = %d KB = %d MB = %d Samples for shared memory RecorderRingbufferHeap... ",
@@ -81,6 +85,16 @@ static int rec_ringuffer_init(void)
 
     /* Creating mutex with priority inheritance */
 #ifdef USE_MUTEX
+    //err = rt_mutex_create(&ringBuffer->ind, SHM_MUTEX_NAME);
+    /*for(i=0; i< MAX_RINGBUFFER_SAMPLES; i++)
+    {
+    	err = rt_mutex_create(&ringBuffer->sensorData[i].dataset_mutex, NULL);
+    	if(err)
+    	{
+    		DPRINT("Can't create Mutex");
+    		return -1;
+    	}
+    }*/
     err = rt_mutex_create(&ringbuffer_mutex, SHM_MUTEX_NAME);
     if(err)
     {

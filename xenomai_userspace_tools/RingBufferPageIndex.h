@@ -20,7 +20,7 @@ class RingBufferPageIndex : public IIncrementableIndex
 	unsigned long long page_width;
 	unsigned long long count_pages;
 public:
-	static const long long int DEFAULT_PAGE_WIDTH = 100;
+	static const unsigned long long int DEFAULT_PAGE_WIDTH = 100;
 
 	RingBufferPageIndex(RingBufferConsumer &ringBufferConsumer);
 

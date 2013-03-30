@@ -26,7 +26,7 @@ public:
 		rb.setSize(originalsize);
 	}
 
-	void testDefaultConstructor_with_defaultdatasets()
+	void testDefaultConstructor1()
 	{
 		// Test for Index without setLastData()
 		TS_ASSERT(rb.setSize(RingBufferLastDataIndex::DEFAULT_DATASETS));
@@ -42,7 +42,7 @@ public:
 		TS_ASSERT_EQUALS(rbl.getDataSets(), RingBufferLastDataIndex::DEFAULT_DATASETS)
 	}
 
-	void testDefaultConstructor_without_defaultdatasets()
+	void testDefaultConstructor2()
 	{
 		TS_ASSERT(rb.setSize(RingBufferLastDataIndex::DEFAULT_DATASETS-1));
 		RingBufferLastDataIndex rbl(rb);

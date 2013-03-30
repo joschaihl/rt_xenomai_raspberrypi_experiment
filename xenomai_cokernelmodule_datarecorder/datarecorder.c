@@ -2,7 +2,7 @@
 /* Real Time Data Recorder Xenomai Linux Co-Kernel Module                     */
 /* Samples Data from GPIO Port                                                */
 /* Saves Data to a shared memory ringbuffer                                   */
-/* Can be controlled via Realtime Pipe /dev/rtp7                              */
+/* Can be controlled via Realtime Pipe /dev/rtpX                              */
 /* 2013 by Joscha Ihl <joscha@grundfarm.de>                                   */
 /******************************************************************************/
 #include "print.h"
@@ -85,14 +85,11 @@ void sample_gpio(void)
 					/*1000000000 - */(now - previous));
 #endif
 		}
-#ifdef USE_ATOMIC_EXECUTION
-		RTDM_EXECUTE_ATOMICALLY(insertSampleToRingBuffer(currentSample));
-#else
+
 		insertSampleToRingBuffer(currentSample);
-#endif
 
 #ifdef AVOID_LINUX_SYSTEM_CALLS
-
+#error Not implemented
 #else
         gpio_set_value(GPIO_PIN_SAMPLE_STATUS_LED, blink);
 	#ifdef USE_TASK_SWITCH_OUTPUT_PIN

@@ -25,7 +25,7 @@ private:
 	unsigned long long index;
 	unsigned long long datasets;
 public:
-	static const long long int DEFAULT_DATASETS = 100ULL;
+	static const unsigned long long int DEFAULT_DATASETS = 100;
 	/**
 	 * The default last index is 0.
 	 * @param ringBufferConsumer The default constructor needs a RingBuffer.

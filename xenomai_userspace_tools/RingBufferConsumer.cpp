@@ -12,7 +12,7 @@
 #include "xen_ringbuf_controller.h"
 
 RingBufferConsumer::RingBufferConsumer() : sharedMemoryIsReady(false),
-shmem(NULL), ringBuffer(NULL)
+shmem(NULL), ringBuffer(NULL), currentIndex(MAX_RINGBUFFER_SAMPLES)
 {
 
 }
@@ -51,14 +51,34 @@ bool RingBufferConsumer::init()
 	err = rt_mutex_bind(&ringbuffer_mutex, SHM_MUTEX_NAME, TM_NONBLOCK);
 #endif
 
+	//check(0);
 	return true;
+}
+
+void RingBufferConsumer::copyData(unsigned long long index)
+throw(IndexOutOfRangeException)
+{
+	bool out_of_range = false;
+	if(index != currentIndex)
+	{
+		CRITICAL_RINGBUFFER_ACCESS(
+			out_of_range = (index >= this->ringBuffer->size);
+			if(!out_of_range)
+			{
+				currentData = this->ringBuffer->sensorData[index];
+			}
+		);
+		if(out_of_range)
+		{
+			throw IndexOutOfRangeException();
+		}
+	}
 }
 
 void RingBufferConsumer::check(unsigned long long index)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 
 {
-	bool out_of_range = false;
 	if(sharedMemoryIsReady==false)
 	{
 		throw SharedMemoryNotInitialized();
@@ -67,13 +87,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 	 * Critical section
 	 */
 
-	CRITICAL_RINGBUFFER_ACCESS(out_of_range = (index >= this->ringBuffer->size));
-
-	if(out_of_range)
-	{
-		throw IndexOutOfRangeException();
-	}
-
+	copyData(index);
 }
 
 bool RingBufferConsumer::setSize(unsigned long long ringBufferSize)
@@ -110,7 +124,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned char result;
 	check(index);
-	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sensorID);
+	result = currentData.sensorID;
 	return result;
 }
 
@@ -119,7 +133,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned long long result;
 	check(index);
-	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sampleTimeCode);
+	result = currentData.sampleTimeCode;
 	return result;
 }
 
@@ -128,18 +142,20 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned char result;
 	check(index);
-	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->sensorData[index].sensorValue);
+	result = currentData.sensorValue;
 	return result;
 }
 
 unsigned long long RingBufferConsumer::getCurrentIndex()
 	throw(SharedMemoryNotInitialized)
 {
+	unsigned long long result;
 	if(sharedMemoryIsReady==false)
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	return ringBuffer->index;
+	CRITICAL_RINGBUFFER_ACCESS(result = ringBuffer->index);
+	return result;
 }
 
 RingBufferConsumer::~RingBufferConsumer()
@@ -154,7 +170,7 @@ RingBufferConsumer::~RingBufferConsumer()
 	/*
 	 * Bind to existing mutex and don't wait if it not exist
 	 */
-	rt_mutex_unbind(&ringbuffer_mutex);
+		rt_mutex_unbind(&ringbuffer_mutex);
 #endif
 
 		rt_heap_unbind(&datarecorder_heap);
