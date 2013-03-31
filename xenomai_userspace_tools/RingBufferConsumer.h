@@ -24,13 +24,23 @@ class RingBufferConsumer
 {
 private:
 	RBUF_MEMBERS;
-	SensorData currentData;
+	bool needs_refresh;
+	bool holds_copy;
+	unsigned long long fromIndex;
+	unsigned long long toIndex;
+	SensorData *localCopy;
+	SensorData localSingleCopy;
+	//SensorData *currentDataSet;
+
 	unsigned long long currentIndex;
 	void copyData(unsigned long long index)
 		throw(IndexOutOfRangeException);
 	bool sharedMemoryIsReady;
 
-	void check(unsigned long long index)
+	void checkAndCopy(unsigned long long index)
+		throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
+
+	void checkRange(unsigned long long from, unsigned long long to)
 		throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
 public:
 	/**
@@ -42,6 +52,14 @@ public:
 	 * @return
 	 */
 	bool init();
+
+	/**
+	 * Gets a copy from the Shared Memory to
+	 * allow faster access without heavy usage of
+	 * mutex.
+	 */
+	bool getSharedMemoryCopy(int p_fromIndex, int p_toIndex)
+		throw(IndexOutOfRangeException, SharedMemoryNotInitialized);
 	/**
 	 *
 	 * @param ringBufferSize

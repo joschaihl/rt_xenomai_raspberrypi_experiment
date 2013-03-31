@@ -9,11 +9,22 @@
 #include "xen_ringbuf_controller.h"
 #include <iostream>
 #include <sys/mman.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/types.h>
+#include<time.h>
 
 using namespace std;
 
 RBUF_MEMBERS;
 RingBuffer rbufCopy;
+
+void copy_rbuf()
+{
+	rt_mutex_acquire(&ringbuffer_mutex, TM_INFINITE);
+	memcpy(&rbufCopy, shmem, sizeof(RingBuffer));
+	rt_mutex_release(&ringbuffer_mutex);
+}
 
 int main(int argc, char **argv)
 {
@@ -53,10 +64,13 @@ int main(int argc, char **argv)
 	// Make the copy
 	//CRITICAL_RINGBUFFER_ACCESS();
 	cout << "Make copy of Ringbuffer" << endl;
+	 struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	printf("nsec: %u\n", (uint)ts.tv_nsec);
 
-	rt_mutex_acquire(&ringbuffer_mutex, TM_INFINITE);
-	memcpy(&rbufCopy, shmem, sizeof(RingBuffer));
-	rt_mutex_release(&ringbuffer_mutex);
+	copy_rbuf();
+	clock_gettime(CLOCK_REALTIME, &ts);
+	printf("nsec: %u\n", (uint)ts.tv_nsec);
 
 	imageFile = fopen("ringbufferimage.img", "wb");
 	fwrite(&rbufCopy, 1, sizeof(rbufCopy), imageFile);

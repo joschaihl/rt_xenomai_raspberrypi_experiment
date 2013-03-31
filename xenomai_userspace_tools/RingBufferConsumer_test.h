@@ -39,6 +39,18 @@ public:
 		TS_ASSERT_THROWS_NOTHING(rbuf.getCurrentIndex());
 	}
 
+	void testBufferedAccess()
+	{
+		RingBufferConsumer rbufBuffered;
+		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES-1), SharedMemoryNotInitialized);
+		TS_ASSERT(rbufBuffered.init());
+		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES), IndexOutOfRangeException);
+		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(2, 1), IndexOutOfRangeException);
+
+		TS_ASSERT(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES-1));
+
+
+	}
 	void testRingBufferSetSize()
 	{
 		unsigned long long originalsize = rbuf.getSize();

@@ -35,10 +35,10 @@ all: $(TARGET)
 #	$(C++) $(USPACE_CFLAGS) -c $< -o $@
 
 RingBufferImager: RingBufferImager.o
-	$(C++) $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OPENCV_LDFLAGS) RingBufferImager.o $(LINKER-FLAGS) $@
+	$(C++) -pg $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_LDFLAGS) $(OPENCV_LDFLAGS) RingBufferImager.o $(LINKER-FLAGS) $@
 
 RingBufferImager.o: RingBufferImager.cpp
-	$(C++) $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) $(OPENCV_CFLAGS) -c RingBufferImager.cpp -o RingBufferImager.o
+	$(C++) -pg $(C++-STD-FLAG) $(WARNING_FLAGS) $(GCOV_FLAGS) $(DEBUG_FLAG) $(USPACE_CFLAGS) $(OPENCV_CFLAGS) -c RingBufferImager.cpp -o RingBufferImager.o
 	
 	
 read_shm_png: ArgumentParser.o SensorDataPrinterTool.o RingBufferConsumer.o RingBufferPageIndex.o RingBufferLastDataIndex.o read_shm_png.o 
