@@ -4,6 +4,7 @@
 #include <cxxtest/TestSuite.h>
 
 #include "RingBufferConsumer.h"
+#include <sys/mman.h>
 
 class RingBufferConsumer_test : public CxxTest::TestSuite
 {
@@ -11,6 +12,10 @@ public:
 	RingBufferConsumer rbuf;
 	void setUp()
 	{
+		/**
+		 * Disable swapping and paging for Real-Time
+		 */
+		mlockall(MCL_CURRENT|MCL_FUTURE);
 	//	TS_ASSERT_THROWS_ANYTHING(throw SharedMemoryNotInitialized());
 	}
 
@@ -29,7 +34,8 @@ public:
 		TS_ASSERT_THROWS(rbuf.setSize(rbuf.getSize()-1), SharedMemoryNotInitialized);
 		TS_ASSERT_THROWS(rbuf.getCurrentIndex(), SharedMemoryNotInitialized);
 		TS_ASSERT(rbuf.init());
-		unsigned long long size = rbuf.getSize();
+		unsigned long long size;
+		TS_ASSERT_THROWS_NOTHING(size = rbuf.getSize());
 		TS_ASSERT_THROWS(rbuf.getSensorValue(size), IndexOutOfRangeException);
 		TS_ASSERT_THROWS(rbuf.getSampleTimeCode(size), IndexOutOfRangeException);
 		TS_ASSERT_THROWS(rbuf.getSensorID(size), IndexOutOfRangeException);
@@ -44,8 +50,19 @@ public:
 		RingBufferConsumer rbufBuffered;
 		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES-1), SharedMemoryNotInitialized);
 		TS_ASSERT(rbufBuffered.init());
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.setSize(MAX_RINGBUFFER_SAMPLES));
 		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES), IndexOutOfRangeException);
-		TS_ASSERT_THROWS(rbufBuffered.getSharedMemoryCopy(2, 1), IndexOutOfRangeException);
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSharedMemoryCopy(2, 1));
+
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSensorID(0));
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSampleTimeCode(0));
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSensorValue(0));
+		unsigned long long last;
+		TS_ASSERT_THROWS_NOTHING(last = rbuf.getSize() -1);
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSensorID(last));
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSampleTimeCode(last));
+		TS_ASSERT_THROWS_NOTHING(rbufBuffered.getSensorValue(last));
+
 
 		TS_ASSERT(rbufBuffered.getSharedMemoryCopy(0, MAX_RINGBUFFER_SAMPLES-1));
 

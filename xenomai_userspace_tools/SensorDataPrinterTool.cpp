@@ -28,7 +28,7 @@ struct PrinterTaskParameters {
 SensorDataPrinterTool::SensorDataPrinterTool(int argc, char **argv) :
 	argc(argc), argv(argv)
 {
-
+	mlockall(MCL_CURRENT|MCL_FUTURE);
 }
 
 void data_printer_task(void *cookie)
@@ -70,7 +70,6 @@ int SensorDataPrinterTool::run(void (&printer) (RingBufferConsumer &rbuf, IIncre
 {
 	/* disable swapping and paging, because of determinism */
 	int result;
-	mlockall(MCL_CURRENT|MCL_FUTURE);
 
 	/*
 	result = rt_task_create(&DataPrinterTask_desc,

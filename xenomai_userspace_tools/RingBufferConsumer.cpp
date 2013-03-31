@@ -9,15 +9,15 @@
 
 #include "ringbuffer_model.h"
 #include "xen_ringbuf_controller.h"
-
-#include <rtdm/rtdm.h>
 #include <sys/mman.h>
+#include <rtdm/rtdm.h>
 #include <stdlib.h>
 
 RingBufferConsumer::RingBufferConsumer() : sharedMemoryIsReady(false),
 shmem(NULL), ringBuffer(NULL), currentIndex(0), needs_refresh(true),
-fromIndex(0), toIndex(0), holds_copy(false), localCopy(NULL) /*,
-currentDataSet(NULL)*/
+fromIndex(0), toIndex(0), toIndex2(0), holds_copy(false), holds_copy2(false),
+localCopy(NULL),
+localCopy2(NULL), currentDataSet(NULL)
 {
 
 }
@@ -25,10 +25,7 @@ currentDataSet(NULL)*/
 bool RingBufferConsumer::init()
 {
 	int err;
-	/**
-	 * Disable swapping and paging for Real-Time
-	 */
-	mlockall(MCL_CURRENT|MCL_FUTURE);
+
 	/* Bind to a shared heap which has been created elsewhere, either
        in kernel or user-space. Here we cannot wait and the heap must
        be available at once, since the caller is not a Xenomai-enabled
@@ -67,25 +64,43 @@ void RingBufferConsumer::copyData(unsigned long long index)
 throw(IndexOutOfRangeException)
 {
 	bool out_of_range = false;
-	if(needs_refresh || index != currentIndex)
-	{
-		CRITICAL_RINGBUFFER_ACCESS(
-			out_of_range = (index >= this->ringBuffer->size);
-			if(!out_of_range)
-			{
-				localSingleCopy = this->ringBuffer->sensorData[index];
-			}
-		);
 
-		if(out_of_range)
-		{
-			throw IndexOutOfRangeException();
-		}
-		// currentDataSet = &localSingleCopy;
+	if (holds_copy && index != currentIndex &&
+			index >= fromIndex && index <= toIndex)
+	{
+		// Use the local copy
+		// Calculate the offset of the index
+		// Eg. if we copied index 100-200
+		// and need index 150
+		// the calculated index is 50 = 150-100 = index - fromIndex
+		unsigned long long copyIndex = index - fromIndex;
+		currentDataSet = &localCopy[copyIndex];
 	}
+	else if (needs_refresh || index != currentIndex)
+	{
+		/**
+		 * Critical section
+		 */
+		CRITICAL_RINGBUFFER_ACCESS(
+				out_of_range = (index >= this->ringBuffer->size);
+				if(!out_of_range)
+				{
+					localSingleCopy = this->ringBuffer->sensorData[index];
+				}
+		);
+		currentDataSet = &localSingleCopy;
+		needs_refresh = false;
+	}
+
+	if (out_of_range)
+	{
+		throw IndexOutOfRangeException();
+	}
+	currentIndex = index;
 }
 
-void RingBufferConsumer::checkRange(unsigned long long from, unsigned long long to)
+void RingBufferConsumer::checkRange(unsigned long long from,
+		unsigned long long to)
 	throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	bool isInRange;
@@ -93,13 +108,12 @@ void RingBufferConsumer::checkRange(unsigned long long from, unsigned long long 
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	isInRange = (from <= to);
-	if(isInRange)
-	{
-		CRITICAL_RINGBUFFER_ACCESS(
+	/**
+	 * Critical section
+	 */
+	CRITICAL_RINGBUFFER_ACCESS(
 			isInRange = (from < this->ringBuffer->size) && (to < this->ringBuffer->size);
-		);
-	}
+	);
 
 	if(!isInRange)
 	{
@@ -115,9 +129,6 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 	{
 		throw SharedMemoryNotInitialized();
 	}
-	/**
-	 * Critical section
-	 */
 
 	copyData(index);
 }
@@ -156,7 +167,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned char result;
 	checkAndCopy(index);
-	result = localSingleCopy.sensorID;
+	result = currentDataSet->sensorID;
 	return result;
 }
 
@@ -165,7 +176,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned long long result;
 	checkAndCopy(index);
-	result = localSingleCopy.sampleTimeCode;
+	result = currentDataSet->sampleTimeCode;
 	return result;
 }
 
@@ -174,7 +185,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
 	unsigned char result;
 	checkAndCopy(index);
-	result = localSingleCopy.sensorValue;
+	result = currentDataSet->sensorValue;
 	return result;
 }
 
@@ -193,44 +204,95 @@ unsigned long long RingBufferConsumer::getCurrentIndex()
 bool RingBufferConsumer::getSharedMemoryCopy(int p_fromIndex, int p_toIndex)
 throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 {
-	bool result = false;
-	unsigned long int sizeToReserve = (p_toIndex - p_fromIndex +1)*sizeof(SensorData);
+	bool result = true;
+	unsigned long int sizeToReserve;
 
 	// Check if fromIndex or toIndex is valid
 	checkRange(p_fromIndex, p_toIndex);
 
-	if(localCopy==NULL)
+	if(p_fromIndex <= p_toIndex)
 	{
-		localCopy = (SensorData *) malloc(sizeToReserve);
+		sizeToReserve = (p_toIndex - p_fromIndex +1)*sizeof(SensorData);
+		if(localCopy==NULL)
+			localCopy = (SensorData *) malloc(sizeToReserve);
+		else
+			localCopy = (SensorData *) realloc(localCopy, sizeToReserve);
+		if(localCopy==NULL)
+		{
+			result = false;
+		}
+		else
+		{
+			void *fromPtr = NULL;
+			fromPtr = &ringBuffer->sensorData[fromIndex];
+
+			// Switch to Real-Time-Mode and fill the local copy with data
+			CRITICAL_RINGBUFFER_ACCESS(memcpy(localCopy, fromPtr, sizeToReserve));
+
+			holds_copy = true;
+			holds_copy2 = false;
+			fromIndex = p_fromIndex;
+			toIndex = p_toIndex;
+			toIndex2 = 0;
+
+		}
 	}
 	else
 	{
-		localCopy = (SensorData *) realloc(localCopy, sizeToReserve);
+		unsigned long long rbufSize;
+
+		rbufSize = getSize();
+
+		sizeToReserve = (rbufSize-p_fromIndex)*sizeof(SensorData);
+		if(localCopy==NULL)
+			localCopy = (SensorData *) malloc(sizeToReserve);
+		else
+			localCopy = (SensorData *) realloc(localCopy, sizeToReserve);
+
+		if(localCopy==NULL)
+		{
+			result = false;
+		}
+		else
+		{
+			unsigned long int sizeToReserve2;
+			sizeToReserve2 = (toIndex)*sizeof(SensorData);
+			if(localCopy2==NULL)
+				localCopy2 = (SensorData *) malloc(sizeToReserve2);
+			else
+				localCopy2 = (SensorData *) realloc(localCopy, sizeToReserve2);
+			if(localCopy2==NULL)
+			{
+				result = false;
+			}
+			else
+			{
+				void *fromPtr = NULL, *fromPtr2 = NULL;
+				fromPtr = &ringBuffer->sensorData[fromIndex];
+				fromPtr2 = &ringBuffer->sensorData[0];
+
+				// Switch to Real-Time-Mode and fill the local copy with data
+				CRITICAL_RINGBUFFER_ACCESS(
+						memcpy(localCopy, fromPtr, sizeToReserve);
+						memcpy(localCopy, fromPtr2, sizeToReserve2);
+				);
+
+				holds_copy = true;
+				holds_copy2 = true;
+				fromIndex = p_fromIndex;
+				toIndex = p_toIndex;
+			}
+		}
 	}
-	if(localCopy==NULL)
+
+	if(!result)
 	{
 		holds_copy = false;
-		needs_refresh = true;
+		holds_copy2 = false;
+		//needs_refresh = true;
 		fromIndex = 0;
 		toIndex = 0;
-		result = false;
-	}
-	else
-	{
-		void *fromPtr = NULL;
-		fromPtr = &ringBuffer->sensorData[fromIndex];
-
-		// Switch to Real-Time-Mode and fill the local copy with data
-		rt_mutex_acquire(&ringbuffer_mutex, TM_INFINITE);
-		memcpy(localCopy, fromPtr, sizeToReserve);
-		rt_mutex_release(&ringbuffer_mutex);
-
-		holds_copy = true;
-		fromIndex = p_fromIndex;
-		toIndex = p_toIndex;
-
-
-		result = true;
+		toIndex2 = 0;
 	}
 	return result;
 }
@@ -252,6 +314,10 @@ RingBufferConsumer::~RingBufferConsumer()
 		if(holds_copy)
 		{
 			free(localCopy);
+		}
+		if(holds_copy2)
+		{
+			free(localCopy2);
 		}
 
 		rt_heap_unbind(&datarecorder_heap);

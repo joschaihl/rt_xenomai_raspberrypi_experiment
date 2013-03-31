@@ -80,6 +80,7 @@ void RingBufferPageIndex::setPage(unsigned long long page,
 			{
 				this->max_index = ringBufferConsumer.getSize() - 1;
 			}
+			ringBufferConsumer.getSharedMemoryCopy(index, max_index);
 		}
 	}
 	else

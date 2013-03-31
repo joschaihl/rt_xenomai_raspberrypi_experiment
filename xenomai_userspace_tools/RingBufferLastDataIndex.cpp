@@ -24,6 +24,7 @@ void RingBufferLastDataIndex::setLastData(unsigned long long end_index,
 		this->index = (end_index + (size - (datasets-1))) % size;
 		this->datasets = datasets;
 		this->incrementCounter = 0;
+		//ringBufferConsumer.getSharedMemoryCopy(index, )
 	}
 	else
 	{

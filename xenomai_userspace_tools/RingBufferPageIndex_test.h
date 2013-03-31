@@ -4,11 +4,12 @@
 #include <cxxtest/TestSuite.h>
 
 #include "RingBufferPageIndex.h"
+#include <sys/mman.h>
 
 class RingBufferPageIndex_test : public CxxTest::TestSuite
 {
 public:
-	RingBufferConsumer rb;
+
 	unsigned long long int originalsize;
 	RingBufferPageIndex_test() : originalsize(0)
 	{
@@ -16,18 +17,27 @@ public:
 	}
 	void setUp()
 	{
+		/**
+		 * Disable swapping and paging for Real-Time
+		 */
+		mlockall(MCL_CURRENT|MCL_FUTURE);
+		RingBufferConsumer rb;
 		rb.init();
 		originalsize = rb.getSize();
 	}
 
 	void tearDown()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		rb.setSize(originalsize);
 	}
 
 
 	void testCountPages()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		TS_ASSERT(rb.setSize(10));
 		RingBufferPageIndex rbi(rb);
 
@@ -40,6 +50,8 @@ public:
 
 	void testRingBufferIndex()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT(rb.setSize(1000));
 		TS_ASSERT_EQUALS(rbi.getIndex(), 0);
@@ -51,6 +63,8 @@ public:
 
 	void testGetPageWidth()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT(rb.setSize(1000));
 		rbi.setPage(0, 666);
@@ -59,6 +73,8 @@ public:
 
 	void testGetPage()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT(rb.setSize(1000));
 		rbi.setPage(777, 1);
@@ -67,6 +83,8 @@ public:
 
 	void testIncrementIndex()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		TS_ASSERT(rb.setSize(10));
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0,3));
@@ -89,6 +107,8 @@ public:
 
 	void testSetPage()
 	{
+		RingBufferConsumer rb;
+		rb.init();
 		TS_ASSERT(rb.setSize(1000));
 		RingBufferPageIndex rbi(rb);
 		TS_ASSERT_THROWS_NOTHING(rbi.setPage(0, 100));

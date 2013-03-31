@@ -26,11 +26,14 @@ private:
 	RBUF_MEMBERS;
 	bool needs_refresh;
 	bool holds_copy;
+	bool holds_copy2;
 	unsigned long long fromIndex;
 	unsigned long long toIndex;
+	unsigned long long toIndex2;
 	SensorData *localCopy;
+	SensorData *localCopy2;
 	SensorData localSingleCopy;
-	//SensorData *currentDataSet;
+	SensorData *currentDataSet;
 
 	unsigned long long currentIndex;
 	void copyData(unsigned long long index)

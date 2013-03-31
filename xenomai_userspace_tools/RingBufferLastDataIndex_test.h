@@ -5,6 +5,7 @@
 
 #include "RingBufferLastDataIndex.h"
 #include "RingBufferConsumer.h"
+#include <sys/mman.h>
 
 class RingBufferLastDataIndex_test : public CxxTest::TestSuite
 {
@@ -17,6 +18,10 @@ public:
 	}
 	void setUp()
 	{
+		/**
+		 * Disable swapping and paging for Real-Time
+		 */
+		mlockall(MCL_CURRENT|MCL_FUTURE);
 		rb.init();
 		originalsize = rb.getSize();
 	}
