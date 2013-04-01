@@ -64,7 +64,7 @@ void RingBufferConsumer::copyData(unsigned long long index)
 throw(IndexOutOfRangeException)
 {
 	bool out_of_range = false;
-
+#ifdef BUFFERED_RINGBUFFER_ACCESS
 	if (holds_copy && index != currentIndex &&
 			index >= fromIndex && index <= toIndex)
 	{
@@ -76,7 +76,14 @@ throw(IndexOutOfRangeException)
 		unsigned long long copyIndex = index - fromIndex;
 		currentDataSet = &localCopy[copyIndex];
 	}
-	else if (needs_refresh || index != currentIndex)
+	else if (holds_copy2 && index != currentIndex &&
+			index >= 0 && index <= toIndex2)
+	{
+		currentDataSet = &localCopy2[index];
+	}
+	else
+#endif
+	if (needs_refresh || index != currentIndex)
 	{
 		/**
 		 * Critical section
@@ -207,6 +214,8 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 	bool result = true;
 	unsigned long int sizeToReserve;
 
+#ifdef BUFFERED_RINGBUFFER_ACCESS
+
 	// Check if fromIndex or toIndex is valid
 	checkRange(p_fromIndex, p_toIndex);
 
@@ -294,6 +303,7 @@ throw(IndexOutOfRangeException, SharedMemoryNotInitialized)
 		toIndex = 0;
 		toIndex2 = 0;
 	}
+#endif
 	return result;
 }
 

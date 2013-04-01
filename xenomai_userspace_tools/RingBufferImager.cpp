@@ -21,9 +21,9 @@ RingBuffer rbufCopy;
 
 void copy_rbuf()
 {
-	rt_mutex_acquire(&ringbuffer_mutex, TM_INFINITE);
-	memcpy(&rbufCopy, shmem, sizeof(RingBuffer));
-	rt_mutex_release(&ringbuffer_mutex);
+	CRITICAL_RINGBUFFER_ACCESS(
+	memcpy(&rbufCopy, shmem, sizeof(RingBuffer))
+	);
 }
 
 int main(int argc, char **argv)

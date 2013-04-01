@@ -18,6 +18,7 @@
 #define SYNC_WITH_SPINLOCK 4
 
 #define SYNC_METHOD SYNC_WITH_MUTEX
+#define BUFFERED_RINGBUFFER_ACCESS
 
 
 /*/dev/rtp7 */
